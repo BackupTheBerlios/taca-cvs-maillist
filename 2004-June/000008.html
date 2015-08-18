@@ -1,0 +1,368 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] doc 02.tex,1.3,1.4 03.tex,1.3,1.4
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20doc%2002.tex%2C1.3%2C1.4%2003.tex%2C1.3%2C1.4&In-Reply-To=%3C200406082155.i58LtjB04608%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000007.html">
+   <LINK REL="Next"  HREF="000009.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] doc 02.tex,1.3,1.4 03.tex,1.3,1.4</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20doc%2002.tex%2C1.3%2C1.4%2003.tex%2C1.3%2C1.4&In-Reply-To=%3C200406082155.i58LtjB04608%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] doc 02.tex,1.3,1.4 03.tex,1.3,1.4">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Tue Jun  8 23:55:46 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000007.html">[Taca-cvs] doc 02.tex,1.2,1.3
+</A></li>
+        <LI>Next message: <A HREF="000009.html">[Taca-cvs] codi - New directory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#8">[ date ]</a>
+              <a href="thread.html#8">[ thread ]</a>
+              <a href="subject.html#8">[ subject ]</a>
+              <a href="author.html#8">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/doc
+In directory sheep:/tmp/cvs-serv18172
+
+Modified Files:
+	02.tex 03.tex 
+Log Message:
+Doc 2004/06/08
+
+Index: 02.tex
+===================================================================
+RCS file: /cvsroot/taca/doc/02.tex,v
+retrieving revision 1.3
+retrieving revision 1.4
+diff -C2 -d -r1.3 -r1.4
+*** 02.tex	8 Jun 2004 21:22:52 -0000	1.3
+--- 02.tex	8 Jun 2004 21:55:43 -0000	1.4
+***************
+*** 12,19 ****
+  \begin{description}
+  \item[Disponibilitat:]
+! Quan un sistema falla en el cluster, el programari del cluster respon distribuint el treball del sistema que ha fallat als sistemes que queden en el cluster.
+  
+  \item[Escalabilitat:]
+! Quan la c&#224;rrega general excedeix les capacitats dels sistemes en el cluster, &#233;s possible afegir sistemes addicionals al mateix.  En l'actualitat, els clients que planegen ampliar la capacitat del seu sistema han de considerar servidors &quot;high end&quot; costosos que proporcionen espai per a CPUs, controladors i mem&#242;ria addicionals. A l'utilitzar la tecnologia de clustering, els clients podran afegir gradualment sistemes est&#224;ndars m&#233;s petits, segons sigui necessari, per a satisfer els requeriments generals de pot&#232;ncia de processament.
+  \end{description}
+  
+--- 12,27 ----
+  \begin{description}
+  \item[Disponibilitat:]
+! Quan un sistema falla en el cluster, el programari del cluster respon
+! distribuint el treball del sistema que ha fallat als sistemes que queden en el
+! cluster.
+  
+  \item[Escalabilitat:]
+! Quan la c&#224;rrega general excedeix les capacitats dels sistemes en el cluster, &#233;s
+! possible afegir sistemes addicionals al mateix.  En l'actualitat, els clients
+! que planegen ampliar la capacitat del seu sistema han de considerar servidors
+! &quot;high end&quot; costosos que proporcionen espai per a CPUs, controladors i mem&#242;ria
+! addicionals. A l'utilitzar la tecnologia de clustering, els clients podran
+! afegir gradualment sistemes est&#224;ndars m&#233;s petits, segons sigui necessari, per a
+! satisfer els requeriments generals de pot&#232;ncia de processament.
+  \end{description}
+  
+***************
+*** 29,41 ****
+  \begin{itemize}
+  \item \textbf{OpenMosix:}
+! &#201;s una imlpementaci&#243; basada en la distribuci&#243; de processos, com a modificaci&#243; per al nucli, de forma que el proc&#233;s &#233;s totalment transparent a l'usuari (al programador* de l'aplicaci&#243;), cosa que fa molt m&#233;s portables els programes a d'altres sistemes, utilitzin o no OpenMosix, i des d'aplicacions no dissenyades espec&#237;ficament per a executar-se en un cluster.
+  
+! De totes maneres, per tal de poder paral&#183;lelitzar les aplicacions, aquestes han d'haver estat ja programades amb diversos processos, ja que OpenMosix no paral&#183;lelitza aplicacions, sin&#243; que nom&#233;s distribueix la c&#224;rrega entre els diferents nodes.
+  
+! Per exemple, si tenim deu nodes al cluster i executem un programa (amb un sol proc&#233;s), tardar&#224; el mateix que si nom&#233;s tingu&#233;ssim un node; per&#242; si executem deu programes d'aquests, tardaran el que si nom&#233;s n'execut&#233;ssim un, ja que cadascun s'executar&#224; en un node.
+  
+! Un inconvenient, per&#242;, &#233;s que tots els nodes del cluster han de tenir exactament el mateix nucli (sense compatibilitat de versions ni cap endavant ni cap enrere).
+  
+! Un altre dels problemes de OpenMosix, &#233;s que no pot migrar cap proc&#233;s que comparteixi mem&#242;ria, de forma que tampoc podr&#224; migrar threads, ja que aquests comparteixen mem&#242;ria.
+  
+  
+--- 37,63 ----
+  \begin{itemize}
+  \item \textbf{OpenMosix:}
+! &#201;s una imlpementaci&#243; basada en la distribuci&#243; de processos, com a modificaci&#243;
+! per al nucli, de forma que el proc&#233;s &#233;s totalment transparent a l'usuari (al
+! programador* de l'aplicaci&#243;), cosa que fa molt m&#233;s portables els programes a
+! d'altres sistemes, utilitzin o no OpenMosix, i des d'aplicacions no dissenyades
+! espec&#237;ficament per a executar-se en un cluster.
+  
+! De totes maneres, per tal de poder paral&#183;lelitzar les aplicacions, aquestes han
+! d'haver estat ja programades amb diversos processos, ja que OpenMosix no
+! paral&#183;lelitza aplicacions, sin&#243; que nom&#233;s distribueix la c&#224;rrega entre els
+! diferents nodes.
+  
+! Per exemple, si tenim deu nodes al cluster i executem un programa (amb un sol
+! proc&#233;s), tardar&#224; el mateix que si nom&#233;s tingu&#233;ssim un node; per&#242; si executem deu
+! programes d'aquests, tardaran el que si nom&#233;s n'execut&#233;ssim un, ja que cadascun
+! s'executar&#224; en un node.
+  
+! Un inconvenient, per&#242;, &#233;s que tots els nodes del cluster han de tenir exactament
+! el mateix nucli (sense compatibilitat de versions ni cap endavant ni cap
+! enrere).
+  
+! Un altre dels problemes de OpenMosix, &#233;s que no pot migrar cap proc&#233;s que
+! comparteixi mem&#242;ria, de forma que tampoc podr&#224; migrar threads, ja que aquests
+! comparteixen mem&#242;ria.
+  
+  
+***************
+*** 43,51 ****
+  \nocite{Beowulf-Home}
+  \nocite{Beowulf-Howto}
+! Beowulf, segons una de les definicions que hem trobat (doncs alguns diuen que es pot dir que un sistema &#233;s Beowulf nom&#233;s si est&#224; contru&#239;t de la mateixa forma que la m&#224;quina original de la NASA; d'altres van cap a l'altre extrem i diuen que &#233;s un sistema Beowulf tot aquell conjunt de m&#224;quines que corren codi paral&#183;lel), &#233;s una arquitectura multi-computador que pot ser utilitzada per a fer computacoins en paral&#183;lel. Normalment consisteix en un node servidor i un o m&#233;s nodes connectats via Ethernet (o qualsevol altre xarxa), per&#242; el millor de tot &#233;s que es pot constru&#239;r amb hardware &quot;normal&quot;, com per exemple qualsevol PC que pugui utilitzar Linux, adaptadors est&#224;ndar d'Ethernet i switchos. Beowulf tamb&#233; utilitza software &quot;com&#250;&quot;, com el sistema operatiu Linux, PVM (Parallel Virtual Machine) i MPI (Message Passing Interface). Una de les grans difer&#232;ncies entre Beowulf i un cluster de estacions de treball (COW - Cluster of Workstations) &#233;s el fet de qu&#232; Beowulf es comporta com una &#250;nica m&#224;quina m&#233;s que no mas com un conjunt d'estacions de treball. Els nodes de Beowulf es poden pensar com un paquet de CPU + mem&#242;ria que es pot connectar al cluster, tal com una CPU o un m&#242;dul de mem&#242;ria es poden connectar a una placa base.
+  
+! Beowulf no &#233;s un paquet de software especial, una nova topologia de xarxa o l'&#250;ltim hack per al kernel, sin&#243; que &#233;s una tecnologia de clustering de m&#224;quines Linux per a formar un supercomputador paral&#183;lel virtual. Tot i que hi ha varis paquets de software com modificacions per al kernel, llibreries PVM i MPI i eines de configuraci&#243; que fan l'arquitectura Beowulf m&#233;s r&#224;pida, m&#233;s f&#224;cil de configurar i molt m&#233;s usable, un pot constru&#239;r una m&#224;quina de la classe Beowulf utilitzant distribucions de Linux est&#224;ndars sense cap software addicional. Tenint un parell de m&#224;quines linux en xarxa que comparteixen com a m&#237;nim el /home a trav&#233;s de NFS i es confien l'una a l'altra per executar shells remotes (rsh), es podria dir que es t&#233; una m&#224;quina Beowulf molt simple de dos nodes.
+  
+! Aix&#237; doncs, est&#224; clar que una aplicaci&#243;, per a funcionar en una arquitectura Beowulf, ha d'haver estat escrita utilitzant llibreries o m&#232;todes especialitzats, no transparents a l'usuari, per&#242; ofereix m&#233;s rendiment que, per exemple, OpenMosix (tot i que aquest &#250;ltim &#233;s totalment transparent a l'usuari).
+  
+  De totes maneres,
+--- 65,100 ----
+  \nocite{Beowulf-Home}
+  \nocite{Beowulf-Howto}
+! Beowulf, segons una de les definicions que hem trobat (doncs alguns diuen que es
+! pot dir que un sistema &#233;s Beowulf nom&#233;s si est&#224; contru&#239;t de la mateixa forma que
+! la m&#224;quina original de la NASA; d'altres van cap a l'altre extrem i diuen que &#233;s
+! un sistema Beowulf tot aquell conjunt de m&#224;quines que corren codi paral&#183;lel), &#233;s
+! una arquitectura multi-computador que pot ser utilitzada per a fer computacoins
+! en paral&#183;lel. Normalment consisteix en un node servidor i un o m&#233;s nodes
+! connectats via Ethernet (o qualsevol altre xarxa), per&#242; el millor de tot &#233;s que
+! es pot constru&#239;r amb hardware &quot;normal&quot;, com per exemple qualsevol PC que pugui
+! utilitzar Linux, adaptadors est&#224;ndar d'Ethernet i switchos. Beowulf tamb&#233;
+! utilitza software &quot;com&#250;&quot;, com el sistema operatiu Linux, PVM (Parallel Virtual
+! Machine) i MPI (Message Passing Interface). Una de les grans difer&#232;ncies entre
+! Beowulf i un cluster de estacions de treball (COW - Cluster of Workstations) &#233;s
+! el fet de qu&#232; Beowulf es comporta com una &#250;nica m&#224;quina m&#233;s que no mas com un
+! conjunt d'estacions de treball. Els nodes de Beowulf es poden pensar com un
+! paquet de CPU + mem&#242;ria que es pot connectar al cluster, tal com una CPU o un
+! m&#242;dul de mem&#242;ria es poden connectar a una placa base.
+  
+! Beowulf no &#233;s un paquet de software especial, una nova topologia de xarxa o
+! l'&#250;ltim hack per al kernel, sin&#243; que &#233;s una tecnologia de clustering de m&#224;quines
+! Linux per a formar un supercomputador paral&#183;lel virtual. Tot i que hi ha varis
+! paquets de software com modificacions per al kernel, llibreries PVM i MPI i
+! eines de configuraci&#243; que fan l'arquitectura Beowulf m&#233;s r&#224;pida, m&#233;s f&#224;cil de
+! configurar i molt m&#233;s usable, un pot constru&#239;r una m&#224;quina de la classe Beowulf
+! utilitzant distribucions de Linux est&#224;ndars sense cap software addicional.
+! Tenint un parell de m&#224;quines linux en xarxa que comparteixen com a m&#237;nim el
+! /home a trav&#233;s de NFS i es confien l'una a l'altra per executar shells remotes
+! (rsh), es podria dir que es t&#233; una m&#224;quina Beowulf molt simple de dos nodes.
+  
+! Aix&#237; doncs, est&#224; clar que una aplicaci&#243;, per a funcionar en una arquitectura
+! Beowulf, ha d'haver estat escrita utilitzant llibreries o m&#232;todes
+! especialitzats, no transparents a l'usuari, per&#242; ofereix m&#233;s rendiment que, per
+! exemple, OpenMosix (tot i que aquest &#250;ltim &#233;s totalment transparent a l'usuari).
+  
+  De totes maneres,
+***************
+*** 53,57 ****
+  
+  \item \textbf{...Altre soft de clustering...}
+! \end{itemize}}
+  
+  \subsubsection{Microkernels (Mach/L4)}
+--- 102,106 ----
+  
+  \item \textbf{...Altre soft de clustering...}
+! \end{itemize}
+  
+  \subsubsection{Microkernels (Mach/L4)}
+***************
+*** 75,82 ****
+  \begin{itemize}
+  \item {\textbf{Solaris:}}
+! Hem trobat exemples de cl&#250;sters de computaci&#243; constru&#239;ts amb aquest Sistema Operatiu, per exemple, el SciClone Cluster Project. El cl&#250;ster est&#224; format exclusivament per m&#224;quines Sun per&#242; no donen moltes caracter&#237;stiques del sistema operatiu, ni tampoc si han tingut que desenvolupar un afegit per dona suport per clustering.  (<A HREF="http://www.compsci.wm.edu/SciClone/introduction/index.html">http://www.compsci.wm.edu/SciClone/introduction/index.html</A>).
+  
+  \item {\textbf{MacOSX:}}
+! Utilitzant la bibloteca de processament carbonlib m&#233;s un software de clustering anomenat pooch (<A HREF="http://daugerresearch.com/pooch/">http://daugerresearch.com/pooch/</A>) &#233;s pot crear un cluster amb aquest sistema operatiu. Com passa a Beowulf per Linux, aquest sistema de clustering est&#224; basat en l'&#250;s de biblioteques de paral.leliitzaci&#243; i per tant els programes s'haur&#225;n d'escriure penssant que s'executen en un cluster no &#233;s transparent a l'usuari/aplicaci&#243;.
+  \end{itemize}
+  
+--- 124,140 ----
+  \begin{itemize}
+  \item {\textbf{Solaris:}}
+! Hem trobat exemples de cl&#250;sters de computaci&#243; constru&#239;ts amb aquest Sistema
+! Operatiu, per exemple, el SciClone Cluster Project. El cl&#250;ster est&#224; format
+! exclusivament per m&#224;quines Sun per&#242; no donen moltes caracter&#237;stiques del sistema
+! operatiu, ni tampoc si han tingut que desenvolupar un afegit per dona suport per
+! clustering.  (<A HREF="http://www.compsci.wm.edu/SciClone/introduction/index.html">http://www.compsci.wm.edu/SciClone/introduction/index.html</A>).
+  
+  \item {\textbf{MacOSX:}}
+! Utilitzant la bibloteca de processament carbonlib m&#233;s un software de clustering
+! anomenat pooch (<A HREF="http://daugerresearch.com/pooch/">http://daugerresearch.com/pooch/</A>) &#233;s pot crear un cluster amb
+! aquest sistema operatiu. Com passa a Beowulf per Linux, aquest sistema de
+! clustering est&#224; basat en l'&#250;s de biblioteques de paral.leliitzaci&#243; i per tant
+! els programes s'haur&#225;n d'escriure penssant que s'executen en un cluster no &#233;s
+! transparent a l'usuari/aplicaci&#243;.
+  \end{itemize}
+  
+***************
+*** 85,93 ****
+  \subsection{Translators de Hurd}
+  \nocite{Hurd-Translators}
+! Els translators s&#243;n servidors de Hurd (SO basat en el micronucli gnuMach, tot i que s'est&#224; migrant cap a oskit-Mach i, en un futur, cap a L4) que proporcionen la interf&#237;cies b&#224;sica del sistema de fitxers, de manera que es poden insertar entre el contingut real d'un fitxer (entenent com a fitxer la representaci&#243; corresponent en el sistema de fitxers - inode -, doncs el fitxer real pot estar en una altra m&#224;quina o, fins i tot, no ser cap fitxer, sin&#243; la representaci&#243; d'una zona de mem&#242;ria) i l'usuari que accedeix al fitxer, de forma que \textit{tradueix} les peticions de l'usuari.
+  
+! Els translators, a m&#233;s am&#233;s, tenen unes propietats molt interessants, i &#233;s que des del punt de vista del kernel, no s&#243;n m&#233;s que processos d'usuari, de forma que els pot executar qualsevol usuari, sense necessitat de tenir permisos de superusuari per instal&#183;lar o modificar un translator, l'&#250;nic que fa falta &#233;s tenir drets d'acc&#233;s a l'inode sobre s'uneix el translator. Molts translators no requereixen un fitxer per a funcionar, i &#233;s per aix&#242; que la informaci&#243; sobre aquests es guarda a l'inode.
+  
+! Els translators s&#243;n responsables de servir totes les operacions del sistema de fitxers que fan refer&#232;ncia a l'inode al que s'uneix. Per aix&#242;, al no estar restringits al t&#237;pic conjunt d'objectes (fitxer de dispositiu, link, etc.), s&#243;n lliures de retornar qualsevol cosa que tingui sentit per al programador.  Un exemple podria ser un translator que es comport&#233;s com un directori quan f&#243;s accedit per \texttt{cd} o \texttt{ls} per&#242; que al mateix temps es comport&#233;s com un fitxer al ser accedit per \texttt{cat}.
+  
+  \subsection{/proc de Linux vs. VFS de Linux}
+--- 143,170 ----
+  \subsection{Translators de Hurd}
+  \nocite{Hurd-Translators}
+! Els translators s&#243;n servidors de Hurd (SO basat en el micronucli gnuMach, tot i
+! que s'est&#224; migrant cap a oskit-Mach i, en un futur, cap a L4) que proporcionen
+! la interf&#237;cies b&#224;sica del sistema de fitxers, de manera que es poden insertar
+! entre el contingut real d'un fitxer (entenent com a fitxer la representaci&#243;
+! corresponent en el sistema de fitxers - inode -, doncs el fitxer real pot estar
+! en una altra m&#224;quina o, fins i tot, no ser cap fitxer, sin&#243; la representaci&#243;
+! d'una zona de mem&#242;ria) i l'usuari que accedeix al fitxer, de forma que
+! \textit{tradueix} les peticions de l'usuari.
+  
+! Els translators, a m&#233;s am&#233;s, tenen unes propietats molt interessants, i &#233;s que
+! des del punt de vista del kernel, no s&#243;n m&#233;s que processos d'usuari, de forma
+! que els pot executar qualsevol usuari, sense necessitat de tenir permisos de
+! superusuari per instal&#183;lar o modificar un translator, l'&#250;nic que fa falta &#233;s
+! tenir drets d'acc&#233;s a l'inode sobre s'uneix el translator. Molts translators no
+! requereixen un fitxer per a funcionar, i &#233;s per aix&#242; que la informaci&#243; sobre
+! aquests es guarda a l'inode.
+  
+! Els translators s&#243;n responsables de servir totes les operacions del sistema de
+! fitxers que fan refer&#232;ncia a l'inode al que s'uneix. Per aix&#242;, al no estar
+! restringits al t&#237;pic conjunt d'objectes (fitxer de dispositiu, link, etc.), s&#243;n
+! lliures de retornar qualsevol cosa que tingui sentit per al programador.  Un
+! exemple podria ser un translator que es comport&#233;s com un directori quan f&#243;s
+! accedit per \texttt{cd} o \texttt{ls} per&#242; que al mateix temps es comport&#233;s com
+! un fitxer al ser accedit per \texttt{cat}.
+  
+  \subsection{/proc de Linux vs. VFS de Linux}
+
+Index: 03.tex
+===================================================================
+RCS file: /cvsroot/taca/doc/03.tex,v
+retrieving revision 1.3
+retrieving revision 1.4
+diff -C2 -d -r1.3 -r1.4
+*** 03.tex	8 Jun 2004 21:04:32 -0000	1.3
+--- 03.tex	8 Jun 2004 21:55:43 -0000	1.4
+***************
+*** 1,4 ****
+- \begin{document}
+- 
+  \chapter{Software de clustering existent}
+  
+--- 1,2 ----
+***************
+*** 61,65 ****
+  \subsubsection{OpenMosix}
+  
+! \paragraph{A nivell de cluster...}
+  \begin{itemize}
+  \item Consultar quantitat de nodes del cluster
+--- 59,64 ----
+  \subsubsection{OpenMosix}
+  
+! \begin{enumerate}
+! \item A nivell de cluster...
+  \begin{itemize}
+  \item Consultar quantitat de nodes del cluster
+***************
+*** 69,73 ****
+  \end{itemize}
+  
+! \paragraph{A nivell de node...}
+  \begin{itemize}
+  \item Quantitat de CPU's d'un node
+--- 68,72 ----
+  \end{itemize}
+  
+! \item A nivell de node...
+  \begin{itemize}
+  \item Quantitat de CPU's d'un node
+***************
+*** 104,108 ****
+  \end{itemize}
+  
+! \paragraph{A nivell de proces...}
+  \begin{itemize}
+  \item Moure processos d'un node a un altre
+--- 103,107 ----
+  \end{itemize}
+  
+! \item A nivell de proces...
+  \begin{itemize}
+  \item Moure processos d'un node a un altre
+***************
+*** 141,151 ****
+  	idem que l'anterior
+  \end{itemize}
+  
+! \textbf{\textit{\underline{...? = volem mirar aquesta informacio de processos
+! que son a altres maquines?}}} \\
+  
+  L'escenari sera oferir un VFS nomes al node d'entrada, i els migrate... de
+! OPMosix
+! no treuen la informacio dels processos de /proc...
+  
+  
+--- 140,151 ----
+  	idem que l'anterior
+  \end{itemize}
++ \end{enumerate} 
+  
+! \textbf{\textit{\underline{
+! ...? = volem mirar aquesta informacio de processos que son a altres maquines?
+! }}} \\
+  
+  L'escenari sera oferir un VFS nomes al node d'entrada, i els migrate... de
+! OPMosix no treuen la informacio dels processos de /proc...
+  
+  
+***************
+*** 187,192 ****
+  
+  Comentar-ho???????????????
+- 
+- 
+- 
+- \end{document}
+--- 187,188 ----
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000007.html">[Taca-cvs] doc 02.tex,1.2,1.3
+</A></li>
+	<LI>Next message: <A HREF="000009.html">[Taca-cvs] codi - New directory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#8">[ date ]</a>
+              <a href="thread.html#8">[ thread ]</a>
+              <a href="subject.html#8">[ subject ]</a>
+              <a href="author.html#8">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

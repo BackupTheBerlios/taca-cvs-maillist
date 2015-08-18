@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] code/backend/openmosix openmosix.c,1.3,1.4
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/backend/openmosix%20openmosix.c%2C1.3%2C1.4&In-Reply-To=%3C200406142354.i5ENspB19438%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000034.html">
+   <LINK REL="Next"  HREF="000036.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] code/backend/openmosix openmosix.c,1.3,1.4</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/backend/openmosix%20openmosix.c%2C1.3%2C1.4&In-Reply-To=%3C200406142354.i5ENspB19438%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] code/backend/openmosix openmosix.c,1.3,1.4">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Tue Jun 15 01:54:51 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000034.html">[Taca-cvs] code/backend backend.h,1.2,1.3
+</A></li>
+        <LI>Next message: <A HREF="000036.html">[Taca-cvs] code/frontend/linux linux.c,1.2,1.3
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#35">[ date ]</a>
+              <a href="thread.html#35">[ thread ]</a>
+              <a href="subject.html#35">[ subject ]</a>
+              <a href="author.html#35">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/code/backend/openmosix
+In directory sheep:/tmp/cvs-serv26242/backend/openmosix
+
+Modified Files:
+	openmosix.c 
+Log Message:
+Backport of today's work
+
+Index: openmosix.c
+===================================================================
+RCS file: /cvsroot/taca/code/backend/openmosix/openmosix.c,v
+retrieving revision 1.3
+retrieving revision 1.4
+diff -C2 -d -r1.3 -r1.4
+*** openmosix.c	11 Jun 2004 20:07:35 -0000	1.3
+--- openmosix.c	14 Jun 2004 23:54:48 -0000	1.4
+***************
+*** 2,26 ****
+  #include &quot;backend.h&quot;
+  #include &lt;linux/mm.h&gt;
+  
+  
+! //struct cluster_t clus = {.nom = &quot;123&quot;,
+! //			 .next = NULL};
+! /*
+! struct node_t n3 = {	.nom = &quot;n3&quot;,
+! 			.next = NULL};
+! struct node_t n2 = {	.nom = &quot;n2&quot;,
+! 			.next = &amp;n3 };
+! struct node_t n1 = {	.nom = &quot;n1&quot;,
+! 			.next = &amp;n2};
+! 
+! struct proces_t p3 = {	.nom = &quot;proc3&quot;,
+! 			.next = NULL};
+  
+- struct proces_t p2 = {	.nom = &quot;proc2&quot;,
+- 			.next = &amp;p3};
+- struct proces_t p1 = {	.nom = &quot;proc1&quot;,
+- 			.next = &amp;p2};
+  
+- */			
+  int num_clusters() 
+  {
+--- 2,11 ----
+  #include &quot;backend.h&quot;
+  #include &lt;linux/mm.h&gt;
++ #include &lt;linux/proc_fs.h&gt;
+  
+  
+! struct proc_dir_entry* cerca_proc(struct proc_dir_entry *parent, char *nom);
+  
+  
+  int num_clusters() 
+  {
+***************
+*** 38,53 ****
+  int num_nodes (struct cluster_t *cluster_id)
+  {
+! 	return 3;
+  }
+  
+  int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista)
+  {
+- 	llista[0].nom = &quot;n0&quot;;
+- 	llista[0].next = &amp;llista[1];
+- 	llista[1].nom = &quot;n1&quot;;
+- 	llista[1].next = &amp;llista[2];
+- 	llista[2].nom = &quot;n2&quot;;
+- 	llista[2].next = NULL;
+  
+  	return 0;
+  }
+--- 23,76 ----
+  int num_nodes (struct cluster_t *cluster_id)
+  {
+! 	
+! 	struct proc_dir_entry *aux;
+! 	int res = 0;
+! 
+! 	printk (&quot; **mosix.c: num_nodes\n&quot;);
+! 	
+! 	// Busquem el proc_dir_entry de /proc/hpc
+! 	aux = cerca_proc(&amp;proc_root,&quot;hpc&quot;);
+! 	
+! 	// Entrem al directori nodes
+! 	aux = cerca_proc(aux,&quot;nodes&quot;);
+! 	
+! 	// Comptem els nodes que te
+! 	aux = aux-&gt;subdir;
+! 	
+! 	while (aux != NULL ) {
+! 		res++;
+! 		aux = aux-&gt;next;
+! 	}
+! 	
+! 	printk(&quot;  ** mosix.c:  El numero de nodes es: %d\n&quot;,res);
+! 	return res;
+  }
+  
+  int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista)
+  {
+  
++ 	struct proc_dir_entry *aux;
++ 	int i;
++ 	
++ 	printk (&quot; ** mosix.c: llistar_nodes\n&quot;);
++ 	
++ 	// Busquem el proc_dir_entry de /proc/hpc
++ 	aux = cerca_proc(&amp;proc_root,&quot;hpc&quot;);
++ 	
++ 	// Entrem al directori nodes
++ 	aux = cerca_proc(aux,&quot;nodes&quot;);
++ 	
++ 	// Assignem els noms dels nodes que te
++ 	aux = aux-&gt;subdir;
++ 	i=0;
++ 	while (aux != NULL ) {		
++ 		printk(&quot;  ** mosix.c: llistar_nodes -&gt; generando nodo:%s\n&quot;, aux-&gt;name);
++ 		llista[i].nom=aux-&gt;name;
++ 		if (aux-&gt;next==NULL)
++ 			llista[i].next=NULL;
++ 		else llista[i].next=&amp;llista[i+1];
++ 		aux = aux-&gt;next;
++ 	}
++ 	
+  	return 0;
+  }
+***************
+*** 82,83 ****
+--- 105,127 ----
+  //int proces_bloquejat (struct proces_t *proc);
+  
++ 
++ 
++ // Funcions auxiliars
++ 
++ // Funcio que donat un directori pare i un nom, retorna el proc_dir_entry corresponent
++ // al subdirectori de nom = &lt;nom&gt;
++ struct proc_dir_entry* cerca_proc(struct proc_dir_entry *parent, char *nom) {	
++ 	
++ 	int trobat = 0;
++ 	struct proc_dir_entry *aux = parent-&gt;subdir; 
++ 	
++ 	while (aux != NULL &amp;&amp; trobat==0) {
++ 		printk(&quot;  ** mosix.c: cerca_proc Estoy en:%s\n&quot;,aux-&gt;name);
++ 		if (!strcmp(aux-&gt;name,nom)) trobat = 1;
++ 		else aux = aux-&gt;next;
++ 	}
++ 	
++ 	if (aux==NULL) printk(&quot;  ** mosix.c : cerca_proc -&gt; Ha pasado algo mu malo!\n&quot;);
++ 	else printk(&quot;  ** mosix.c : cerca_proc -&gt; directorio buscado:%s, encontrado:%s\n&quot;,nom,aux-&gt;name);
++ 	return aux;
++ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000034.html">[Taca-cvs] code/backend backend.h,1.2,1.3
+</A></li>
+	<LI>Next message: <A HREF="000036.html">[Taca-cvs] code/frontend/linux linux.c,1.2,1.3
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#35">[ date ]</a>
+              <a href="thread.html#35">[ thread ]</a>
+              <a href="subject.html#35">[ subject ]</a>
+              <a href="author.html#35">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

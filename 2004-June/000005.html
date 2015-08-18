@@ -1,0 +1,373 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] doc 03.tex,1.2,1.3
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20doc%2003.tex%2C1.2%2C1.3&In-Reply-To=%3C200406082104.i58L4YB03540%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000004.html">
+   <LINK REL="Next"  HREF="000006.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] doc 03.tex,1.2,1.3</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20doc%2003.tex%2C1.2%2C1.3&In-Reply-To=%3C200406082104.i58L4YB03540%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] doc 03.tex,1.2,1.3">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Tue Jun  8 23:04:34 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000004.html">[Taca-cvs] doc 02.tex,1.1,1.2 03.tex,1.1,1.2
+</A></li>
+        <LI>Next message: <A HREF="000006.html">[Taca-cvs] doc 04.tex,1.1,1.2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#5">[ date ]</a>
+              <a href="thread.html#5">[ thread ]</a>
+              <a href="subject.html#5">[ subject ]</a>
+              <a href="author.html#5">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/doc
+In directory sheep:/tmp/cvs-serv14634
+
+Modified Files:
+	03.tex 
+Log Message:
+Doc 2004/06/08
+
+Index: 03.tex
+===================================================================
+RCS file: /cvsroot/taca/doc/03.tex,v
+retrieving revision 1.2
+retrieving revision 1.3
+diff -C2 -d -r1.2 -r1.3
+*** 03.tex	7 Jun 2004 17:49:26 -0000	1.2
+--- 03.tex	8 Jun 2004 21:04:32 -0000	1.3
+***************
+*** 1,102 ****
+! \documentclass{letter}
+  
+! %%%%%%%%%% Start TeXmacs macros
+! \catcode`\&#224;=\active \def&#224;{\`a} \catcode`\&#192;=\active \def&#192;{\`A}
+! \catcode`\&#225;=\active \def&#225;{\'a} \catcode`\&#193;=\active \def&#193;{\'A}
+! \catcode`\&#228;=\active \def&#228;{\&quot;a} \catcode`\&#196;=\active \def&#196;{\&quot;A}
+! \catcode`\&#226;=\active \def&#226;{\^a} \catcode`\&#194;=\active \def&#194;{\^A}
+! \catcode`\&#229;=\active \def&#229;{{\aa}} \catcode`\&#197;=\active \def&#197;{{\AA}}
+! \catcode`\&#231;=\active \def&#231;{\c{c}} \catcode`\&#199;=\active \def&#199;{\c{C}}
+! \catcode`\&#232;=\active \def&#232;{\`e} \catcode`\&#200;=\active \def&#200;{\`E}
+! \catcode`\&#233;=\active \def&#233;{\'e} \catcode`\&#201;=\active \def&#201;{\'E}
+! \catcode`\&#235;=\active \def&#235;{\&quot;e} \catcode`\&#203;=\active \def&#203;{\&quot;E}
+! \catcode`\&#234;=\active \def&#234;{\^e} \catcode`\&#202;=\active \def&#202;{\^E}
+! \catcode`\&#236;=\active \def&#236;{\`{\i}} \catcode`\&#204;=\active \def&#204;{\`{\I}}
+! \catcode`\&#237;=\active \def&#237;{\'{\i}} \catcode`\&#205;=\active \def&#205;{\'{\I}}
+! \catcode`\&#239;=\active \def&#239;{\&quot;{\i}} \catcode`\&#207;=\active \def&#207;{\&quot;{\I}}
+! \catcode`\&#238;=\active \def&#238;{\^{\i}} \catcode`\&#206;=\active \def&#206;{\^{\I}}
+! \catcode`\&#242;=\active \def&#242;{\`o} \catcode`\&#210;=\active \def&#210;{\`O}
+! \catcode`\&#243;=\active \def&#243;{\'o} \catcode`\&#211;=\active \def&#211;{\'O}
+! \catcode`\&#246;=\active \def&#246;{\&quot;o} \catcode`\&#214;=\active \def&#214;{\&quot;O}
+! \catcode`\&#244;=\active \def&#244;{\^o} \catcode`\&#212;=\active \def&#212;{\^O}
+! \catcode`\&#249;=\active \def&#249;{\`u} \catcode`\&#217;=\active \def&#217;{\`U}
+! \catcode`\&#250;=\active \def&#250;{\'u} \catcode`\&#218;=\active \def&#218;{\'U}
+! \catcode`\&#252;=\active \def&#252;{\&quot;u} \catcode`\&#220;=\active \def&#220;{\&quot;U}
+! \catcode`\&#251;=\active \def&#251;{\^u} \catcode`\&#219;=\active \def&#219;{\^U}
+! \catcode`\&#253;=\active \def&#253;{\'y} \catcode`\&#221;=\active \def&#221;{\'Y}
+! \catcode`\&#255;=\active \def&#255;{\&quot;y} \catcode`\&#152;=\active \def&#152;{\&quot;Y}
+! \catcode`\&#189;=\active \def&#189;{!`}
+! \catcode`\&#190;=\active \def&#190;{?`}
+! \catcode`\&#223;=\active \def&#223;{{\ss}}
+! \newcommand{\chapter}[1]{\medskip\bigskip
+  
+! \noindent\textbf{\begin{center}\huge #1\end{center}}\vspace{-3ex}
+  
+! \noindent}
+! \newcommand{\section}[1]{\medskip\bigskip
+  
+! \noindent\textbf{\LARGE #1}\vspace{-3ex}
+  
+! \noindent}
+! \newcommand{\subsection}[1]{\medskip\bigskip
+  
+- \noindent\textbf{\Large #1}\vspace{-3ex}
+  
+! \noindent}
+! \newcommand{\subsubsection}[1]{\medskip\bigskip
+  
+! \noindent\textbf{\large #1}\vspace{-3ex}
+  
+! \noindent}
+! \newcommand{\paragraph}[1]{\smallskip
+  
+! \noindent\textbf{#1} }
+! %%%%%%%%%% End TeXmacs macros
+  
+! \begin{document}
+  
+! \chapter{Software de clustering existent}
+  
+! \section{Necessitats generals} (qu&#232; ens ha d'oferir la capa inferior) (poder
+! migrar processos, poder veure on s&#243;n, ...) (qu&#232; nosaltres VOLEM poder fer)
+  
+- \section{Qu&#232; ens ofereixen els sistemes} (qu&#232; proporciona a una capa superior)
+- (si ja proporciona una abstracci&#243; semblant a la que volem...) (qu&#232; nosaltres
+- PODEM fer)
+  
+! \subsection{Linux}
+  
+! \subsubsection{OpenMosix}
+  
+- \paragraph{\subsubsection{Beowulf} {\nocite{Beowulf-MiniHowto}} Tal com s'ha
+- explicat anteriorment, Beowulf &#233;s una arquitectura i no un paquet de software,
+- de manera que hi ha diverses eines o distribucions que permeten contru&#239;r
+- aquesta arquitectura:}{\begin{itemize}
+-   \item Cluster Management Utility (CMU) de Compaq
+-   
+-   \item Projecte OSCAR (Open Source Cluster Application Resources)
+-   
+-   \item ROCKS Clustering Toolkit.
+-   
+-   \item Patagonia Cluster Project
+-   
+-   \item SMILE Cluster Management System (SCMS) i les seves eines per a Beowulf
+-   
+-   \item Projecte SCore Cluster System Software (Score)
+-   
+-   \item Software ALINKA Linux Clustering
+- \end{itemize}}{Degut a la gran varietat d'eines d'administraci&#243; i de sistemes
+- de comunicaci&#243; que utilitzen els programadors (PVM, MPI, etc.) en aquesta
+- arquitectura (precisament per ser una arquitectura i no un software concret),
+- no ens ha estat possible definir les caracter&#237;stiques concretes de Beowulf i,
+- per tant, en la resta del treball ens basarem en les experi&#232;ncies concretes
+- d'OpenMosix i la teoria sobre el que ofereix un sistema de computaci&#243;
+- distribu&#239;da.}
+  
+  \subsection{Microkernels (Mach/L4)}
+  
+  
+  
+  \subsection{Altres Sistemes}
+  
+  
+--- 1,190 ----
+! \begin{document}
+  
+! \chapter{Software de clustering existent}
+  
+! \section{Necessitats generals}
+! (qu&#232; ens ha d'oferir la capa inferior) \\
+! (poder migrar processos, poder veure on s&#243;n, ...) \\
+! (qu&#232; nosaltres VOLEM poder fer)
+  
+! \subsection {A nivell de cluster...}
+! \begin{itemize}
+! \item Consultar quantitat de nodes del cluster
+! \item Consultar carrega total del cluster
+! \end{itemize}
+  
+! \subsection {A nivell de node...}
+! \begin{itemize}
+! \item Quantitat de CPU's d'un node
+! \item Consultar carrega del node
+! \item Consultar estat de memoria
+! \item Bloquejar l'arribada de nous processos remots
+! \item Bloquejar la migracio de processos locals
+! \item Activar/Desactivar la migraci&#243; automatica de processos
+! \item Demanar que els processos que ha creat un node i han migrat, tornin  a
+! aquest node (come back home)
+! \item Expulsar els &quot;processos convidats&quot; a casa
+! \item Saber quin identificador te un node
+! \item Modificar/Consultar la velocitat d'un node
+! \item Consultar informacio de processos (resum de l'estat de processos locals, i
+! remots)
+! \item Consultar resum de l'estat del node
+! \end{itemize}
+  
+! \subsection {A nivell de proces...}
+! \begin{itemize}
+! \item Moure processos d'un node a un altre
+! \item Bloquejar un proces en un node concret (/proc.....lock)
+! \item Crear un nou proces en una maquina (crear un fitxer)
+! \item Matar un proces (esborrar un fitxer)
+! \item Copiar un proces??
+! \item Modificar/veure memoria del proces (/proc....mem)
+! \item Consultar la linia de comandes amb la que s'ha ex/proc....cmdline)
+! \item Consultar estat del proces (/proc....status)
+! \item Consultar quants cops s'ha migrat el proces
+! \item Consultar on s'esta computant actualment
+! \item Consultar quin node el va crear
+! \item Saber l'identificador de proces (ID global)
+! \item Saber l'identificador local d'un proces (ex: PID)
+! \item Consultar resum de us de CPU
+! \item Consultar resum de us de Memoria
+! \end{itemize}
+  
+  
+! \section{Qu&#232; ens ofereixen els sistemes}
+! (qu&#232; proporciona a una capa superior) \\
+! (si ja proporciona una abstracci&#243; semblant a la que volem...) \\
+! (qu&#232; nosaltres PODEM fer)
+!                 
+! \subsection{Linux}
+  
+! \subsubsection{OpenMosix}
+  
+! \paragraph{A nivell de cluster...}
+! \begin{itemize}
+! \item Consultar quantitat de nodes del cluster
+! 	Consultant el numero de subdirectoris de tipus NODE del directori cluster.
+! \item Consultar carrega total del cluster
+! 	Mitjana ponderada de la carrega dels nodes que conte el cluster.
+! \end{itemize}
+  
+! \paragraph{A nivell de node...}
+! \begin{itemize}
+! \item Quantitat de CPU's d'un node
+! 	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/cpus
+! \item Consultar carrega del node
+! 	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/load
+! \item Consultar estat de memoria
+! 	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/mem
+! \item Bloquejar l'arribada de nous processos remots (per altres nodes que no
+! sigui el local??muntar /proc..admin dels altres??)
+! 	Consultant el fitxer /proc/hpc/admin/block
+! \item Bloquejar la migracio de processos locals
+! 	Bloquejar cada proc&#233;s del node (mirar seg&#252;ent secci&#243;)
+! \item Activar/Desactivar la migraci&#243; automatica de processos
+! 	Modificar el fitxer /proc/hpc/admin/stay
+! \item Demanar que els processos que ha creat un node i han migrat, tornin  a
+! aquest node (come back home)
+! 	Modificar el fitxer /proc/hpc/admin/bring (com???)
+! \item Expulsar els &quot;processos convidats&quot; a casa
+! 	Modificar el fitxer /proc/hpc/admin/expel
+! \item Saber quin identificador te un node
+! 	Consultar el fitxer /proc/hpc/admin/mospe (o mirar el nom del directori del
+! node)
+! \item Modificar/Consultar la velocitat d'un node
+! 	Consultar el fitxer /proc/hpc/admin/speed
+! \item Consultar informacio de processos (resum de l'estat de processos locals, i
+! remots)
+! 	Generar un resum consultant la informaci&#243; de cada proc&#233;s del node amb les
+! operacions
+! 	de consulta de informaci&#243; de proces (mirar seg&#252;ent secci&#243;)
+! \item Consultar resum de l'estat del node
+! 	Generar un resum amb la informaci&#243; sobre el node descrita a les funcionalitats
+! anteriors.
+! \end{itemize}
+  
+! \paragraph{A nivell de proces...}
+! \begin{itemize}
+! \item Moure processos d'un node a un altre
+! 	Fer un migrate del proces que volem moure al node on ha d'anar
+! 	=&gt; Esborrar els fitxers relatius al proces del node origen
+! 	=&gt; Generar els fitxers relatius al proces al node desti
+! \item Bloquejar un proces en un node concret (/proc.....lock)
+! 	Modificar el fitxer /proc/[PID]/lock
+! \item Crear un nou proces en una maquina (crear un fitxer)
+! 	Posar en execucio el proces al node on volem que s'executi
+! 	=&gt; Generar els fitxers relatius al proces en aquest node.
+! \item Matar un proces (esborrar un fitxer)
+! 	Fer un &quot;kill&quot; del proces
+! 	=&gt; Esborrar els fitxers relatius al proces al node on s'esta executant.
+! \item Copiar un proces??
+! \item Modificar/veure memoria del proces (/proc....mem) (...?)
+! 	Consultar el fitxer /proc/[PID]/mem
+! \item Consultar la linia de comandes amb la que s'ha ex/proc....cmdline) (...?)
+! 	Consultar el fitxer /proc/[PID]/cmdline
+! \item Consultar estat del proces (/proc....status) (...?)
+! 	Consultar el fitxer /proc/[PID]/status
+! \item Consultar quants cops s'ha migrat el proces (...?)
+! 	Consultar el fitxer /proc/[PID]/nmigs
+! \item Consultar on s'esta computant actualment
+! 	Consultar el fitxer /proc/[PID]/where (o mirar el directori pare)
+! \item Consultar quin node el va crear
+! 	Consultar el fitxer /proc/hpc/remote/from (de quin???)
+! \item Saber l'identificador de proces (ID global) (el generem nosaltres?? cada
+! cop que creem un proces??)
+! \item Saber l'identificador local d'un proces (ex: PID) (...?)
+! 	Consultar el directori que representa el proces a /proc/[PID]
+! \item Consultar resum de us de CPU (...?)
+! 	Per locals -&gt; top -p PID
+! 	Per remots -&gt; consultar fitxer /proc/hpc/remote/stats
+! \item Consultar resum de us de Memoria (...?)
+! 	idem que l'anterior
+! \end{itemize}
+  
+! \textbf{\textit{\underline{...? = volem mirar aquesta informacio de processos
+! que son a altres maquines?}}} \\
+  
+! L'escenari sera oferir un VFS nomes al node d'entrada, i els migrate... de
+! OPMosix
+! no treuen la informacio dels processos de /proc...
+  
+  
+! \subsubsection{Beowulf}
+! \nocite{Beowulf-MiniHowto}
+! Tal com s'ha explicat anteriorment, Beowulf &#233;s una arquitectura i no un paquet
+! de software, de manera que hi ha diverses eines o distribucions que permeten
+! contru&#239;r aquesta arquitectura:
+  
+! \begin{itemize}
+! \item Cluster Management Utility (CMU) de Compaq
+! \item Projecte OSCAR (Open Source Cluster Application Resources)
+! \item ROCKS Clustering Toolkit.
+! \item Patagonia Cluster Project
+! \item SMILE Cluster Management System (SCMS) i les seves eines per a Beowulf
+! \item Projecte SCore Cluster System Software (Score)
+! \item Software ALINKA Linux Clustering
+! \end{itemize} 
+! 
+! Degut a la gran varietat d'eines d'administraci&#243; i de sistemes de comunicaci&#243;
+! que utilitzen els programadors (PVM, MPI, etc.) en aquesta arquitectura
+! (precisament per ser una arquitectura i no un software concret), no ens ha estat
+! possible definir les caracter&#237;stiques concretes de Beowulf i, per tant, en la
+! resta del treball ens basarem en les experi&#232;ncies concretes d'OpenMosix i la
+! teoria sobre el que ofereix un sistema de computaci&#243; distribu&#239;da.
+  
+  
+  \subsection{Microkernels (Mach/L4)}
++ Tal com s'ha explicat a l'apartat 2, els cl&#250;sters existents sobre Microkernels
++ segueixen la mateixa arquitectura que BeoWulf, no existeix cap tipus d'est&#224;ndard
++ ni d'API que ens serveixi per definir les caracter&#237;stiques concretes de cl&#250;sters
++ en Microkernels, ja que totes les implementacions que hem trobat s&#243;n a nivell
++ d'investigaci&#243; i/o recerca.
+  
+  
+  
+  \subsection{Altres Sistemes}
++ &#191;&#191;&#191;&#191;No s'ha trobat res????
++ 
++ Comentar-ho???????????????
+  
+  
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000004.html">[Taca-cvs] doc 02.tex,1.1,1.2 03.tex,1.1,1.2
+</A></li>
+	<LI>Next message: <A HREF="000006.html">[Taca-cvs] doc 04.tex,1.1,1.2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#5">[ date ]</a>
+              <a href="thread.html#5">[ thread ]</a>
+              <a href="subject.html#5">[ subject ]</a>
+              <a href="author.html#5">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

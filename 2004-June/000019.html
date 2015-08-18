@@ -1,0 +1,335 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] code/frontend/linux Makefile,NONE,1.1 linux.c,NONE,1.1
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/frontend/linux%20Makefile%2CNONE%2C1.1%20linux.c%2CNONE%2C1.1&In-Reply-To=%3C200406110248.i5B2mpB18514%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000020.html">
+   <LINK REL="Next"  HREF="000021.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] code/frontend/linux Makefile,NONE,1.1 linux.c,NONE,1.1</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/frontend/linux%20Makefile%2CNONE%2C1.1%20linux.c%2CNONE%2C1.1&In-Reply-To=%3C200406110248.i5B2mpB18514%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] code/frontend/linux Makefile,NONE,1.1 linux.c,NONE,1.1">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Fri Jun 11 04:48:51 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000020.html">[Taca-cvs] code/backend Makefile,NONE,1.1 backend.h,NONE,1.1
+</A></li>
+        <LI>Next message: <A HREF="000021.html">[Taca-cvs] code/backend/openmosix Makefile,NONE,1.1 openmosix.c,NONE,1.1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#19">[ date ]</a>
+              <a href="thread.html#19">[ thread ]</a>
+              <a href="subject.html#19">[ subject ]</a>
+              <a href="author.html#19">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/code/frontend/linux
+In directory sheep:/tmp/cvs-serv11627/code/frontend/linux
+
+Added Files:
+	Makefile linux.c 
+Log Message:
+Reorganization of code
+
+--- NEW FILE: Makefile ---
+
+CFLAGS += $(LINUX_CFLAGS)
+
+TARGET = linux.o
+#OBJS   = a.c b.c
+
+all: $(TARGET)
+	cp $(TARGET) $(TOPDIR)/frontend.o
+
+#$(TARGET): $(OBJS)
+
+clean:
+	rm -f $(TARGET)
+
+
+--- NEW FILE: linux.c ---
+/**
+ * Notes:
+ * Implementing a small filesystem having one file
+ *
+ * -&gt; What happens when we mount a file system?
+ * -&gt; What do we need to provide to the kernel so that we are mountable?
+ * -&gt; What inode, dentry and file operations do we have to support?
+ */
+
+#include &lt;linux/kernel.h&gt;
+#include &lt;linux/module.h&gt;
+#include &lt;linux/version.h&gt;
+/*
+  #if CONFIG_MODVERSIONS==1
+  #define MODVERSIONS
+  #include &lt;linux/modversions.h&gt;
+  #endif
+*/
+#include &lt;linux/fs.h&gt;
+#include &lt;linux/sched.h&gt;
+
+#include &lt;linux/mm.h&gt;
+
+#include &quot;backend.h&quot;
+
+#define RKFS_MAGIC 0xabcd
+#define FILE_INODE_NUMBER 2
+
+static struct super_block *rkfs_read_super(struct super_block *, void *, int);
+void rkfs_s_readinode( struct inode *inode );
+int rkfs_s_statfs( struct super_block *sb, struct statfs *buf );
+struct dentry *rkfs_i_lookup( struct inode *parent_inode, struct dentry *dentry );
+ssize_t rkfs_f_read( struct file *file, char *buf, size_t max, loff_t *len );
+int rkfs_f_readdir( struct file *file, void *dirent, filldir_t filldir );
+ssize_t rkfs_f_write (struct file *, const char *, size_t, loff_t *);
+int rkfs_f_release (struct inode *, struct file *);
+
+/*
+ * Data declarations
+ */
+
+static struct super_operations rkfs_sops = {
+    read_inode: rkfs_s_readinode,
+    statfs: rkfs_s_statfs
+    //  put_inode: rkfs_s_putinode,
+    //  delete_inode:    rkfs_s_deleteinode,
+    //  statfs: rkfs_s_statfs
+};
+
+struct inode_operations rkfs_iops = {
+    lookup: rkfs_i_lookup
+};
+
+struct file_operations rkfs_dir_fops = {
+    read   : generic_read_dir,
+    readdir: &amp;rkfs_f_readdir
+};
+
+struct file_operations rkfs_file_fops = {
+    read : &amp;rkfs_f_read,
+    write: &amp;rkfs_f_write
+    //    release: &amp;rkfs_f_release
+};
+
+// use this macro to declare the filesystem structure
+DECLARE_FSTYPE( rkfs, &quot;rkfs&quot;, rkfs_read_super, 0 );
+struct inode *rkfs_root_inode;
+
+char file_buf[1024] = &quot;Hello World\n&quot;;
+int file_size = 12;
+
+/*
+ * File-System Operations
+ */
+/*
+ * This will be called when the kernel is attempting to mount something. It creates a
+ * super_block structure and calls our callback/function to fill it.
+ */
+static struct super_block *rkfs_read_super( struct super_block *sb, void *buf, int size ) {
+    sb-&gt;s_blocksize = 1024;
+    sb-&gt;s_blocksize_bits = 10;
+    sb-&gt;s_magic = RKFS_MAGIC;
+    sb-&gt;s_op = &amp;rkfs_sops; // super block operations
+    sb-&gt;s_type = &rkfs; // file_system_type
+
+    rkfs_root_inode = iget( sb, 1 ); // allocate an inode
+    rkfs_root_inode-&gt;i_op = &amp;rkfs_iops; // set the inode ops
+    rkfs_root_inode-&gt;i_mode = S_IFDIR|S_IRWXU;
+    rkfs_root_inode-&gt;i_fop = &amp;rkfs_dir_fops;
+
+    if(!(sb-&gt;s_root = d_alloc_root(rkfs_root_inode))) {
+        iput(rkfs_root_inode);
+        return NULL;
+    }
+
+    printk( &quot;rkfs: read_super returning a valid super_block\n&quot; );
+    return sb;
+}
+
+/*
+ * Super-Block Operations
+ */
+
+void rkfs_s_readinode( struct inode *inode ) {
+    inode-&gt;i_mtime = inode-&gt;i_atime = inode-&gt;i_ctime = CURRENT_TIME;
+    printk( &quot;rkfs: super_operations.readinode called\n&quot; );
+}
+
+/*
+ * This will be called to get the filesystem information like size etc.
+ */
+int rkfs_s_statfs( struct super_block *sb, struct statfs *buf ) {
+    buf-&gt;f_type = RKFS_MAGIC;
+    buf-&gt;f_bsize = PAGE_SIZE/sizeof(long);
+    buf-&gt;f_bfree = 0;
+    buf-&gt;f_bavail = 0;
+    buf-&gt;f_ffree = 0;
+    buf-&gt;f_namelen = NAME_MAX;
+    printk( &quot;rkfs: super_operations.statfs called\n&quot; );
+    return 0;
+}
+
+/*
+ * Inode Operations
+ */
+
+struct dentry *rkfs_i_lookup( struct inode *parent_inode, struct dentry *dentry ) {
+  struct inode *file_inode;
+
+  if( parent_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino &amp;&amp; strlen(&quot;hello.txt&quot;) == dentry-&gt;d_name.len &amp;&amp; !strcmp(dentry-&gt;d_name.name, &quot;hello.txt&quot;)) {
+	  // allocate an inode object
+	  if(!(file_inode = iget( parent_inode-&gt;i_sb, FILE_INODE_NUMBER )))
+		  return ERR_PTR(-ENOMEM);
+	  file_inode-&gt;i_size = file_size;
+	  file_inode-&gt;i_mode = S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+	  file_inode-&gt;i_fop = &amp;rkfs_file_fops;
+	  //  add the inode to the dentry object
+	  d_add(dentry, file_inode);
+  }
+  if( parent_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino &amp;&amp; strlen(&quot;tonto&quot;) == dentry-&gt;d_name.len &amp;&amp; !strcmp(dentry-&gt;d_name.name, &quot;tonto&quot;)) {
+	  // allocate an inode object
+	  if(!(file_inode = iget( parent_inode-&gt;i_sb, 3)))
+		  return ERR_PTR(-ENOMEM);
+	  //file_inode-&gt;i_size = file_size;
+	  file_inode-&gt;i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+	  file_inode-&gt;i_fop = &amp;rkfs_file_fops;
+	  file_inode-&gt;i_op = &amp;rkfs_iops;
+	  //  add the inode to the dentry object
+	  d_add(dentry, file_inode);
+  }
+  else {
+      return ERR_PTR(-ENOENT);
+  }
+  printk( &quot;rkfs: inode_operations.lookup called with dentry %s. size = %d\n&quot;, dentry-&gt;d_name.name, file_size );
+  return NULL;
+}
+
+/*
+ * File Operations
+ */
+
+ssize_t rkfs_f_read( struct file *file, char *buf, size_t max, loff_t *offset ) {
+    int i;
+    int buflen;
+    if(*offset &gt; 0)
+        return 0;
+    printk( &quot;rkfs: file_operations.read called %d %d\n&quot;, max, *offset );
+    buflen = file_size &gt; max ? max : file_size;
+    __generic_copy_to_user(buf, file_buf, buflen);
+    //           copy_to_user(buf, file_buf, buflen);
+    *offset += buflen; // advance the offset
+    return buflen;
+}
+
+ssize_t rkfs_f_write (struct file *file, const char *buf, size_t maxlen, loff_t *offset) {
+    int count;
+    if(*offset &gt; 0) {
+        printk(&quot;Positive offset %d\n&quot;, *offset);
+        return 0;
+    }
+    count = maxlen &gt; sizeof(file_buf) ? sizeof(file_buf) : maxlen;
+    __generic_copy_from_user(file_buf, buf, count);
+        //    copy_from_user(file_buf, buf, maxlen);
+    printk( &quot;file_operations.write called with maxlen=%d, off=%d\n&quot;, maxlen, *offset );
+    *offset += count;
+    if(*offset &gt; file_size)
+        file_size = *offset;
+    return count;
+}
+
+/*
+int rkfs_f_release (struct inode *ino, struct file *file) {
+    printk( &quot;rkfs: file_operations.release called\n&quot; );
+    return 0;
+}
+*/
+
+int rkfs_f_readdir( struct file *file, void *dirent, filldir_t filldir ) {
+    int err;
+    struct dentry *de = file-&gt;f_dentry;
+
+    printk( &quot;rkfs: file_operations.readdir called\n&quot; );
+    if(file-&gt;f_pos &gt; 0 )
+        return 1;
+    
+    if(filldir(dirent, &quot;.&quot;, 1, file-&gt;f_pos++, de-&gt;d_inode-&gt;i_ino, DT_DIR)||
+       (filldir(dirent, &quot;..&quot;, 2, file-&gt;f_pos++, de-&gt;d_parent-&gt;d_inode-&gt;i_ino, DT_DIR)))
+        return 0;
+    
+    if(de-&gt;d_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino) // Estem a l'arrel 
+    {
+	struct cluster_t *llista;
+	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t) ,GFP_KERNEL);	
+	llistar_clusters(llista);
+
+    	printk( &quot;rkfs: file_operations.readdir called caca\n&quot; );
+	while (llista != NULL) {	
+		if(filldir(dirent, llista-&gt;nom, strlen(llista-&gt;nom), file-&gt;f_pos++, 3, DT_DIR ))
+	         	return 0;
+		llista = llista-&gt;next;
+    	printk( &quot;rkfs: file_operations.readdir called bucle\n&quot; );
+	} 
+    printk( &quot;rkfs: file_operations.readdir calledi final\n&quot; );
+		
+    }
+//	    if(filldir(dirent, &quot;hello.txt&quot;, 9, file-&gt;f_pos++, FILE_INODE_NUMBER, DT_REG ))
+	    
+  //  if(filldir(dirent, &quot;hello.txt&quot;, 9, file-&gt;f_pos++, FILE_INODE_NUMBER, DT_REG ))
+    //    return 0;
+    /* Mostrar subdirs */
+//    if(filldir(dirent, &quot;tonto&quot;, 5, file-&gt;f_pos++, 3, DT_DIR ))
+//        return 0;
+    
+    
+    return 1;
+}
+
+int init_module(void) {
+    int err;
+    err = register_filesystem( &amp;rkfs );
+    return err;
+}
+
+void cleanup_module(void) {
+    unregister_filesystem( &amp;rkfs );
+}
+
+MODULE_LICENSE(&quot;GPL&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000020.html">[Taca-cvs] code/backend Makefile,NONE,1.1 backend.h,NONE,1.1
+</A></li>
+	<LI>Next message: <A HREF="000021.html">[Taca-cvs] code/backend/openmosix Makefile,NONE,1.1 openmosix.c,NONE,1.1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#19">[ date ]</a>
+              <a href="thread.html#19">[ thread ]</a>
+              <a href="subject.html#19">[ subject ]</a>
+              <a href="author.html#19">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

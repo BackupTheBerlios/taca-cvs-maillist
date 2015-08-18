@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] doc 00-taca.bib,1.4,1.5 05.tex,1.4,1.5
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20doc%2000-taca.bib%2C1.4%2C1.5%2005.tex%2C1.4%2C1.5&In-Reply-To=%3C200406242000.i5OK0uB16797%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000059.html">
+   <LINK REL="Next"  HREF="000061.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] doc 00-taca.bib,1.4,1.5 05.tex,1.4,1.5</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20doc%2000-taca.bib%2C1.4%2C1.5%2005.tex%2C1.4%2C1.5&In-Reply-To=%3C200406242000.i5OK0uB16797%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] doc 00-taca.bib,1.4,1.5 05.tex,1.4,1.5">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Thu Jun 24 22:00:56 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000059.html">[Taca-cvs] doc 06.tex,1.2,1.3
+</A></li>
+        <LI>Next message: <A HREF="000061.html">[Taca-cvs] doc 00-taca.bib,1.4,1.5 05.tex,1.4,1.5
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#60">[ date ]</a>
+              <a href="thread.html#60">[ thread ]</a>
+              <a href="subject.html#60">[ subject ]</a>
+              <a href="author.html#60">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/doc
+In directory sheep:/tmp/cvs-serv29213
+
+Modified Files:
+	00-taca.bib 05.tex 
+Log Message:
+Petits canvis a la bibliografia
+
+Index: 00-taca.bib
+===================================================================
+RCS file: /cvsroot/taca/doc/00-taca.bib,v
+retrieving revision 1.4
+retrieving revision 1.5
+diff -C2 -d -r1.4 -r1.5
+*** 00-taca.bib	20 Jun 2004 16:56:59 -0000	1.4
+--- 00-taca.bib	24 Jun 2004 20:00:53 -0000	1.5
+***************
+*** 89,100 ****
+  }
+  
+! @manual{VFS-seq,
+! 	title = {Driver porting: The seq\_file interface},
+! 	note = {\\<A HREF="http://lwn.net/Articles/22355/">http://lwn.net/Articles/22355/</A>}
+  }
+  
+  @manual{VFS-tlk,
+  	title = {The Linux kernel},
+! 	note = {\\<A HREF="http://www.win.tue.nl/~aeb/linux/lk/lk.html">http://www.win.tue.nl/~aeb/linux/lk/lk.html</A>}
+  }
+  
+--- 89,100 ----
+  }
+  
+! @manual{VFS-lk,
+! 	title = {The Linux kernel},
+! 	note = {\\<A HREF="http://www.win.tue.nl/~aeb/linux/lk/lk.html">http://www.win.tue.nl/~aeb/linux/lk/lk.html</A>}
+  }
+  
+  @manual{VFS-tlk,
+  	title = {The Linux kernel},
+! 	note = {\\<A HREF="http://en.tldp.org/LDP/tlk/">http://en.tldp.org/LDP/tlk/</A>}
+  }
+  
+
+Index: 05.tex
+===================================================================
+RCS file: /cvsroot/taca/doc/05.tex,v
+retrieving revision 1.4
+retrieving revision 1.5
+diff -C2 -d -r1.4 -r1.5
+*** 05.tex	19 Jun 2004 19:33:12 -0000	1.4
+--- 05.tex	24 Jun 2004 20:00:53 -0000	1.5
+***************
+*** 36,41 ****
+  \nocite{VFS-libfs}
+  \nocite{VFS-rkfs}
+  \nocite{VFS-tlk}
+- \nocite{VFS-seq}
+  Aquest sistema de fitxers est&#224; basat en la interf&#237;cie del VFS (\textit{Virtual
+  File System}) que proporciona Linux.
+--- 36,41 ----
+  \nocite{VFS-libfs}
+  \nocite{VFS-rkfs}
++ \nocite{VFS-lk}
+  \nocite{VFS-tlk}
+  Aquest sistema de fitxers est&#224; basat en la interf&#237;cie del VFS (\textit{Virtual
+  File System}) que proporciona Linux.
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000059.html">[Taca-cvs] doc 06.tex,1.2,1.3
+</A></li>
+	<LI>Next message: <A HREF="000061.html">[Taca-cvs] doc 00-taca.bib,1.4,1.5 05.tex,1.4,1.5
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#60">[ date ]</a>
+              <a href="thread.html#60">[ thread ]</a>
+              <a href="subject.html#60">[ subject ]</a>
+              <a href="author.html#60">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

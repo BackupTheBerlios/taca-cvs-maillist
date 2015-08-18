@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] code/backend/openmosix openmosix.c,1.4,1.5
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/backend/openmosix%20openmosix.c%2C1.4%2C1.5&In-Reply-To=%3C200406151724.i5FHOvB10840%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000040.html">
+   <LINK REL="Next"  HREF="000042.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] code/backend/openmosix openmosix.c,1.4,1.5</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/backend/openmosix%20openmosix.c%2C1.4%2C1.5&In-Reply-To=%3C200406151724.i5FHOvB10840%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] code/backend/openmosix openmosix.c,1.4,1.5">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Tue Jun 15 19:24:57 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000040.html">[Taca-cvs] code/frontend/linux linux.c,1.3,1.4
+</A></li>
+        <LI>Next message: <A HREF="000042.html">[Taca-cvs] code/backend/dummy dummy.c,NONE,1.1 Makefile,NONE,1.1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#41">[ date ]</a>
+              <a href="thread.html#41">[ thread ]</a>
+              <a href="subject.html#41">[ subject ]</a>
+              <a href="author.html#41">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/code/backend/openmosix
+In directory sheep:/tmp/cvs-serv9134/code/backend/openmosix
+
+Modified Files:
+	openmosix.c 
+Log Message:
+OpenMosix definitivament es resisteix
+
+Index: openmosix.c
+===================================================================
+RCS file: /cvsroot/taca/code/backend/openmosix/openmosix.c,v
+retrieving revision 1.4
+retrieving revision 1.5
+diff -C2 -d -r1.4 -r1.5
+*** openmosix.c	14 Jun 2004 23:54:48 -0000	1.4
+--- openmosix.c	15 Jun 2004 17:24:55 -0000	1.5
+***************
+*** 3,6 ****
+--- 3,7 ----
+  #include &lt;linux/mm.h&gt;
+  #include &lt;linux/proc_fs.h&gt;
++ #include &lt;linux/list.h&gt;
+  
+  
+***************
+*** 27,32 ****
+--- 28,39 ----
+  	int res = 0;
+  
++ 	
++ 	struct nameidata nd;
++ 
++ 
++ 
+  	printk (&quot; **mosix.c: num_nodes\n&quot;);
+  	
++ 	/*
+  	// Busquem el proc_dir_entry de /proc/hpc
+  	aux = cerca_proc(&amp;proc_root,&quot;hpc&quot;);
+***************
+*** 42,46 ****
+  		aux = aux-&gt;next;
+  	}
+! 	
+  	printk(&quot;  ** mosix.c:  El numero de nodes es: %d\n&quot;,res);
+  	return res;
+--- 49,88 ----
+  		aux = aux-&gt;next;
+  	}
+! 	*/
+! 
+! 	/*
+! 	res = path_lookup(&quot;/proc/hpc/nodes/3&quot;,LOOKUP_DIRECTORY,&amp;nd);
+! 	if (res == 0) {
+! 		struct list_head *head = &amp;nd.dentry-&gt;d_subdirs;
+! 		struct dentry *pos;
+! 		printk(&quot;**%s: Hi ha alguna cosa\n&quot;,__FILE__);
+! 		for (pos = list_entry((head)-&gt;next, typeof(*pos), d_subdirs),
+! 				prefetch(pos-&gt;d_subdirs.next);
+! 				&amp;pos-&gt;d_subdirs != (head);
+! 				pos = list_entry(pos-&gt;d_subdirs.next, typeof(*pos), d_subdirs),
+! 				prefetch(pos-&gt;d_subdirs.next)) {
+! 			printk(&quot;**%s: dentry_aux-&gt;d_name-&gt;name=%s\n&quot;,__FILE__,pos-&gt;d_name.name);
+! 			res++;
+! 		}
+! 	}
+! 	else {
+! 		printk(&quot;**%s: No hem trobat res\n&quot;,__FILE__);
+! 	}
+! 	*/
+! 
+! 	res = sys_open(&quot;/proc/hpc/nodes&quot;, O_DIRECTORY, O_RDONLY);
+! 	if (res &gt; 0) {
+! 		int tam = 4096;
+! 		char buf[tam];
+! 		printk(&quot;  ** mosix.c: sys_open OK\n&quot;);
+! 		res = sys_read(res, buf, tam);
+! 		printk(&quot;  ** mosix.c: sys_read=%d\n&quot;,res);
+! 		if (res&gt;0)
+! 			printk(&quot;  ** mosix.c: sys_read-&gt;\n%s\n&quot;,buf);
+! 	}
+! 	else {
+! 		printk(&quot;  ** mosix.c: sys_open KO\n&quot;);
+! 	}
+! 
+  	printk(&quot;  ** mosix.c:  El numero de nodes es: %d\n&quot;,res);
+  	return res;
+***************
+*** 126,127 ****
+--- 168,179 ----
+  	return aux;
+  }
++ 
++ int path_lookup(const char *path, unsigned flags, struct nameidata *nd)
++ {
++ 	int error = 0;
++ 	if (path_init(path, flags, nd))
++ 		error = path_walk(path, nd);
++ 	return error;
++ }
++ 
++ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000040.html">[Taca-cvs] code/frontend/linux linux.c,1.3,1.4
+</A></li>
+	<LI>Next message: <A HREF="000042.html">[Taca-cvs] code/backend/dummy dummy.c,NONE,1.1 Makefile,NONE,1.1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#41">[ date ]</a>
+              <a href="thread.html#41">[ thread ]</a>
+              <a href="subject.html#41">[ subject ]</a>
+              <a href="author.html#41">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

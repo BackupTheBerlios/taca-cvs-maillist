@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] code/backend/openmosix Makefile,NONE,1.1 openmosix.c,NONE,1.1
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/backend/openmosix%20Makefile%2CNONE%2C1.1%20openmosix.c%2CNONE%2C1.1&In-Reply-To=%3C200406110249.i5B2n0B18521%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000019.html">
+   <LINK REL="Next"  HREF="000022.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] code/backend/openmosix Makefile,NONE,1.1 openmosix.c,NONE,1.1</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/backend/openmosix%20Makefile%2CNONE%2C1.1%20openmosix.c%2CNONE%2C1.1&In-Reply-To=%3C200406110249.i5B2n0B18521%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] code/backend/openmosix Makefile,NONE,1.1 openmosix.c,NONE,1.1">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Fri Jun 11 04:49:00 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000019.html">[Taca-cvs] code/frontend/linux Makefile,NONE,1.1 linux.c,NONE,1.1
+</A></li>
+        <LI>Next message: <A HREF="000022.html">[Taca-cvs] code Makefile,1.1,1.2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#21">[ date ]</a>
+              <a href="thread.html#21">[ thread ]</a>
+              <a href="subject.html#21">[ subject ]</a>
+              <a href="author.html#21">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/code/backend/openmosix
+In directory sheep:/tmp/cvs-serv11627/code/backend/openmosix
+
+Added Files:
+	Makefile openmosix.c 
+Log Message:
+Reorganization of code
+
+--- NEW FILE: Makefile ---
+
+CFLAGS += $(OPENMOSIX_CFLAGS)
+
+TARGET = openmosix.o
+#OBJS   = a.c b.c
+
+all: $(TARGET)
+	cp $(TARGET) $(TOPDIR)/backend.o
+
+#$(TARGET): $(OBJS)
+
+clean:
+	rm -f $(TARGET)
+
+
+--- NEW FILE: openmosix.c ---
+#include &quot;backend.h&quot;
+#include &lt;linux/mm.h&gt;
+
+
+//struct cluster_t clus = {.nom = &quot;123&quot;,
+//			 .next = NULL};
+
+struct node_t n3 = {	.nom = &quot;n3&quot;,
+			.next = NULL};
+struct node_t n2 = {	.nom = &quot;n2&quot;,
+			.next = &amp;n3 };
+struct node_t n1 = {	.nom = &quot;n1&quot;,
+			.next = &amp;n2};
+
+struct proces_t p3 = {	.nom = &quot;proc3&quot;,
+			.next = NULL};
+
+struct proces_t p2 = {	.nom = &quot;proc2&quot;,
+			.next = &amp;p3};
+struct proces_t p1 = {	.nom = &quot;proc1&quot;,
+			.next = &amp;p2};
+
+int llistar_clusters (struct cluster_t *llista)
+{
+	//llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t) ,GFP_KERNEL);	
+	llista-&gt;nom = &quot;c1&quot; ;
+	llista-&gt;next = NULL;
+	return 0;
+}
+
+int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista)
+{
+	//llista[0] = &amp;n1;
+	//llista[1] = &amp;n2;
+	//llista[2] = &amp;n3;
+	
+}
+
+int liistar_procs (struct node_t *node_id, struct proces_t *llista)
+{
+	//llista[0] = &amp;p1;
+	//llista[1] = &amp;p2;
+	//llista[2] = &amp;p3;
+}
+
+
+//int migrar (struct proces_t  *proces, struct node_t *node_desti);
+
+/* El node pot rebre procs. nous ? */
+//int node_bloquejat_rebre (struct node_t *node);
+
+/* El node pot enviar procs. nous ? */
+//int node_bloquejat_enviar (struct node_t *node);
+
+/* El proces no es pot migrar */
+//int proces_bloquejat (struct proces_t *proc);
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000019.html">[Taca-cvs] code/frontend/linux Makefile,NONE,1.1 linux.c,NONE,1.1
+</A></li>
+	<LI>Next message: <A HREF="000022.html">[Taca-cvs] code Makefile,1.1,1.2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#21">[ date ]</a>
+              <a href="thread.html#21">[ thread ]</a>
+              <a href="subject.html#21">[ subject ]</a>
+              <a href="author.html#21">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,480 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] codi generic.h,1.1,1.2 mosix.c,1.1,1.2 rkfs.c,1.1,1.2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20codi%20generic.h%2C1.1%2C1.2%20mosix.c%2C1.1%2C1.2%20rkfs.c%2C1.1%2C1.2&In-Reply-To=%3C200406111543.i5BFhFB06287%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000024.html">
+   <LINK REL="Next"  HREF="000026.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] codi generic.h,1.1,1.2 mosix.c,1.1,1.2 rkfs.c,1.1,1.2</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20codi%20generic.h%2C1.1%2C1.2%20mosix.c%2C1.1%2C1.2%20rkfs.c%2C1.1%2C1.2&In-Reply-To=%3C200406111543.i5BFhFB06287%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] codi generic.h,1.1,1.2 mosix.c,1.1,1.2 rkfs.c,1.1,1.2">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Fri Jun 11 17:43:15 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000024.html">[Taca-cvs] code/backend/openmosix openmosix.c,1.1,1.2
+</A></li>
+        <LI>Next message: <A HREF="000026.html">[Taca-cvs] code/frontend/linux linux.c,1.1,1.2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#25">[ date ]</a>
+              <a href="thread.html#25">[ thread ]</a>
+              <a href="subject.html#25">[ subject ]</a>
+              <a href="author.html#25">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/codi
+In directory sheep:/tmp/cvs-serv14988
+
+Modified Files:
+	generic.h mosix.c rkfs.c 
+Log Message:
+Ja funciona el nostre sistema de fitxers!!!!!!!!!
+
+ole!!!!
+
+
+
+Index: generic.h
+===================================================================
+RCS file: /cvsroot/taca/codi/generic.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -C2 -d -r1.1 -r1.2
+*** generic.h	10 Jun 2004 17:49:41 -0000	1.1
+--- generic.h	11 Jun 2004 15:43:12 -0000	1.2
+***************
+*** 18,27 ****
+  
+  
+! 
+  int llistar_clusters (struct cluster_t *llista);
+  
+  int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista);
+  
+! int liistar_procs (struct node_t *node_id, struct proces_t *lista);
+  
+  
+--- 18,29 ----
+  
+  
+! int num_clusters();
+  int llistar_clusters (struct cluster_t *llista);
+  
++ int num_nodes(struct cluster_t *cluster_id);
+  int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista);
+  
+! int num_procs(struct cluster_t *cluster_id, struct node_t *node_id);
+! int liistar_procs (struct cluster_t *cluster_id, struct node_t *node_id, struct proces_t *lista);
+  
+  
+
+Index: mosix.c
+===================================================================
+RCS file: /cvsroot/taca/codi/mosix.c,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -C2 -d -r1.1 -r1.2
+*** mosix.c	10 Jun 2004 17:49:41 -0000	1.1
+--- mosix.c	11 Jun 2004 15:43:12 -0000	1.2
+***************
+*** 1,2 ****
+--- 1,3 ----
++ 
+  #include &quot;generic.h&quot;
+  #include &lt;linux/mm.h&gt;
+***************
+*** 5,9 ****
+  //struct cluster_t clus = {.nom = &quot;123&quot;,
+  //			 .next = NULL};
+! 
+  struct node_t n3 = {	.nom = &quot;n3&quot;,
+  			.next = NULL};
+--- 6,10 ----
+  //struct cluster_t clus = {.nom = &quot;123&quot;,
+  //			 .next = NULL};
+! /*
+  struct node_t n3 = {	.nom = &quot;n3&quot;,
+  			.next = NULL};
+***************
+*** 21,24 ****
+--- 22,31 ----
+  			.next = &amp;p2};
+  
++ */			
++ int num_clusters() 
++ {
++ 	return 1;
++ }
++ 
+  int llistar_clusters (struct cluster_t *llista)
+  {
+***************
+*** 29,45 ****
+  }
+  
+  int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista)
+  {
+! 	//llista[0] = &amp;n1;
+! 	//llista[1] = &amp;n2;
+! 	//llista[2] = &amp;n3;
+! 	
+  }
+  
+! int liistar_procs (struct node_t *node_id, struct proces_t *llista)
+  {
+! 	//llista[0] = &amp;p1;
+! 	//llista[1] = &amp;p2;
+! 	//llista[2] = &amp;p3;
+  }
+  
+--- 36,71 ----
+  }
+  
++ int num_nodes (struct cluster_t *cluster_id)
++ {
++ 	return 3;
++ }
++ 
+  int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista)
+  {
+! 	llista[0].nom = &quot;n0&quot;;
+! 	llista[0].next = &amp;llista[1];
+! 	llista[1].nom = &quot;n1&quot;;
+! 	llista[1].next = &amp;llista[2];
+! 	llista[2].nom = &quot;n2&quot;;
+! 	llista[2].next = NULL;
+! 
+! 	return 0;
+  }
+  
+! int num_procs (struct cluster_t *cluster_id, struct node_t *node_id) 
+  {
+! 	return 3;
+! }
+! 
+! int llistar_procs (struct cluster_t *cluster_id, struct node_t *node_id, struct proces_t *llista)
+! {
+! 	llista[0].nom = &quot;p0&quot;;
+! 	llista[0].next = &amp;llista[1];
+! 	llista[1].nom = &quot;p1&quot;;
+! 	llista[1].next = &amp;llista[2];
+! 	llista[2].nom = &quot;p2&quot;;
+! 	llista[2].next = NULL;
+! 
+! 	return 0;
+  }
+  
+
+Index: rkfs.c
+===================================================================
+RCS file: /cvsroot/taca/codi/rkfs.c,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -C2 -d -r1.1 -r1.2
+*** rkfs.c	10 Jun 2004 17:49:41 -0000	1.1
+--- rkfs.c	11 Jun 2004 15:43:12 -0000	1.2
+***************
+*** 26,29 ****
+--- 26,30 ----
+  #define RKFS_MAGIC 0xabcd
+  #define FILE_INODE_NUMBER 2
++ #define DIR_INODE_NUMBER 3
+  
+  static struct super_block *rkfs_read_super(struct super_block *, void *, int);
+***************
+*** 125,156 ****
+   */
+  
+  struct dentry *rkfs_i_lookup( struct inode *parent_inode, struct dentry *dentry ) {
+    struct inode *file_inode;
+! 
+!   if( parent_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino &amp;&amp; strlen(&quot;hello.txt&quot;) == dentry-&gt;d_name.len &amp;&amp; !strcmp(dentry-&gt;d_name.name, &quot;hello.txt&quot;)) {
+  	  // allocate an inode object
+! 	  if(!(file_inode = iget( parent_inode-&gt;i_sb, FILE_INODE_NUMBER )))
+  		  return ERR_PTR(-ENOMEM);
+! 	  file_inode-&gt;i_size = file_size;
+! 	  file_inode-&gt;i_mode = S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+! 	  file_inode-&gt;i_fop = &amp;rkfs_file_fops;
+  	  //  add the inode to the dentry object
+  	  d_add(dentry, file_inode);
+    }
+!   if( parent_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino &amp;&amp; strlen(&quot;tonto&quot;) == dentry-&gt;d_name.len &amp;&amp; !strcmp(dentry-&gt;d_name.name, &quot;tonto&quot;)) {
+! 	  // allocate an inode object
+! 	  if(!(file_inode = iget( parent_inode-&gt;i_sb, 3)))
+  		  return ERR_PTR(-ENOMEM);
+- 	  //file_inode-&gt;i_size = file_size;
+  	  file_inode-&gt;i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+! 	  file_inode-&gt;i_fop = &amp;rkfs_file_fops;
+  	  file_inode-&gt;i_op = &amp;rkfs_iops;
+! 	  //  add the inode to the dentry object
+  	  d_add(dentry, file_inode);
+    }
+    else {
+        return ERR_PTR(-ENOENT);
+    }
+!   printk( &quot;rkfs: inode_operations.lookup called with dentry %s. size = %d\n&quot;, dentry-&gt;d_name.name, file_size );
+    return NULL;
+  }
+--- 126,198 ----
+   */
+  
++ /* Aquesta funcio genera el inode pel dentry que es vol mirar 
++  * El inode que es vol generar &#233;s &quot;fill&quot; del parent_inode
++  *
++  *
++  * TODO: comprovar que el directori on es vol entrar &#233;s correcte
++  */
++ 
+  struct dentry *rkfs_i_lookup( struct inode *parent_inode, struct dentry *dentry ) {
+    struct inode *file_inode;
+!   
+!   printk( &quot;rkfs: inode_operations.lookup called with dentry %s. size = %d\n&quot;, dentry-&gt;d_name.name, file_size );
+!   
+!   /* Hem de generar el inode per mostrar un clusters (el dentry) 
+!    * Per tant un directori
+!    * */
+!   if( parent_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino) {
+! 	  
+  	  // allocate an inode object
+! 	  if(!(file_inode = iget( parent_inode-&gt;i_sb, DIR_INODE_NUMBER)))
+  		  return ERR_PTR(-ENOMEM);
+! 	  //file_inode-&gt;i_size = file_size;
+! 	  file_inode-&gt;i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+! 	  file_inode-&gt;i_fop = &amp;rkfs_dir_fops;
+! 	  file_inode-&gt;i_op = &amp;rkfs_iops;
+  	  //  add the inode to the dentry object
+  	  d_add(dentry, file_inode);
++ 	  
++ 	  printk(&quot; lookup: inode per cluster %s generat\n&quot;, dentry-&gt;d_name.name);
+    }
+! 
+!   /* hem de generar el inode per mostrar el node */	
+!   else if( dentry-&gt;d_parent-&gt;d_parent-&gt;d_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino) {
+! 
+! 
+! 	  //allocate an inode object
+! 	  if(!(file_inode = iget( parent_inode-&gt;i_sb, DIR_INODE_NUMBER)))
+  		  return ERR_PTR(-ENOMEM);
+  	  file_inode-&gt;i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+! 	  file_inode-&gt;i_fop = &amp;rkfs_dir_fops;
+  	  file_inode-&gt;i_op = &amp;rkfs_iops;
+! 	  //add the inode to the dentry object
+  	  d_add(dentry, file_inode);
++ 
++ 	  printk(&quot; lookup: inode per node %s generat\n&quot;, dentry-&gt;d_name.name);
++ 
++ 
+    }
++ 	  
++   // Hem de generar l'inode per mostrar el proces
++   else if( dentry-&gt;d_parent-&gt;d_parent-&gt;d_parent-&gt;d_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino) {
++ 
++ 	  //allocate an inode object
++ 	  if(!(file_inode = iget( parent_inode-&gt;i_sb, FILE_INODE_NUMBER)))
++ 			  return ERR_PTR(-ENOMEM);
++ 	  file_inode-&gt;i_size = file_size;
++ 	  file_inode-&gt;i_mode = S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
++ 	  file_inode-&gt;i_fop = &amp;rkfs_file_fops;
++ 	  //add the inode to the dentry object
++ 	  d_add(dentry, file_inode);
++ 
++ 	  printk(&quot; lookup: inode per process %s generat\n&quot;, dentry-&gt;d_name.name);
++ 
++ 
++   }
++   
+    else {
+        return ERR_PTR(-ENOENT);
+    }
+!   
+    return NULL;
+  }
+***************
+*** 211,235 ****
+      {
+  	struct cluster_t *llista;
+! 	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t) ,GFP_KERNEL);	
+  	llistar_clusters(llista);
+  
+!     	printk( &quot;rkfs: file_operations.readdir called caca\n&quot; );
+  	while (llista != NULL) {	
+! 		if(filldir(dirent, llista-&gt;nom, strlen(llista-&gt;nom), file-&gt;f_pos++, 3, DT_DIR ))
+  	         	return 0;
+  		llista = llista-&gt;next;
+-     	printk( &quot;rkfs: file_operations.readdir called bucle\n&quot; );
+  	} 
+!     printk( &quot;rkfs: file_operations.readdir calledi final\n&quot; );
+  		
+      }
+- //	    if(filldir(dirent, &quot;hello.txt&quot;, 9, file-&gt;f_pos++, FILE_INODE_NUMBER, DT_REG ))
+- 	    
+-   //  if(filldir(dirent, &quot;hello.txt&quot;, 9, file-&gt;f_pos++, FILE_INODE_NUMBER, DT_REG ))
+-     //    return 0;
+-     /* Mostrar subdirs */
+- //    if(filldir(dirent, &quot;tonto&quot;, 5, file-&gt;f_pos++, 3, DT_DIR ))
+- //        return 0;
+      
+      
+      return 1;
+--- 253,375 ----
+      {
+  	struct cluster_t *llista;
+! 	int num;
+! 	
+! 	num = num_clusters();
+! 	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
+  	llistar_clusters(llista);
+  
+!     	printk( &quot; readdir: Creant clusters\n&quot; );
+  	while (llista != NULL) {	
+! 		if(filldir(dirent, llista-&gt;nom, strlen(llista-&gt;nom), file-&gt;f_pos++, DIR_INODE_NUMBER, DT_DIR ))
+  	         	return 0;
+  		llista = llista-&gt;next;
+  	} 
+! 	printk(&quot; readdir: Directoris per clusters creats\n&quot;);
+! 	kfree(llista);
+  		
+      }
+      
++     
++     else if(de-&gt;d_parent-&gt;d_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino) // Estem a un cluster 
++     {
++ 	struct cluster_t *llista;
++ 	struct node_t *llista1;
++ 	int num;
++ 	int i=0;
++ 	
++ 	printk(&quot; readdir: Llistant nodes del cluster %s\n&quot;, de-&gt;d_name.name);
++ 
++ 	
++ 	// Obtenim tots els clusters i busquem en quin estem
++ 	num = num_clusters();
++ 	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
++ 	llistar_clusters(llista);
++ 	
++ 	while (llista != NULL &amp;&amp; i==0) {	
++ 		
++ 		printk(&quot; readdir: Busquem el cluster\n&quot;);
++ 		
++ 		if (!strcmp(de-&gt;d_name.name, llista-&gt;nom)) i=1;
++ 		else llista = llista-&gt;next;
++ 	} 
++ 
++ 	// Llistem tots els nodes del cluster
++ 	num = num_nodes(llista);	
++ 	llista1 = (struct node_t *)kmalloc(sizeof(struct node_t)*num ,GFP_KERNEL);
++ 	llistar_nodes(llista,llista1);
++ 
++ 	while (llista1 != NULL) {
++ 		
++ 		printk(&quot; readdir: Creem els directoris pels nodes\n&quot;);
++ 		
++ 		if(filldir(dirent, llista1-&gt;nom, strlen(llista1-&gt;nom), file-&gt;f_pos++, DIR_INODE_NUMBER, DT_DIR ))
++ 			return 0;
++ 		llista1 = llista1-&gt;next;
++ 	}
++     	
++ 	printk(&quot; readdir: Directoris per nodes creats\n&quot;);
++     	
++ 	
++ 	kfree(llista);
++ 	kfree(llista1);
++ 	}
++     
++     else if(de-&gt;d_parent-&gt;d_parent-&gt;d_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino) // Estem a un node 
++     {
++ 	struct cluster_t *llista;
++ 	struct node_t *llista1;
++ 	struct proces_t *llista2;
++ 	int num;
++ 	int i=0;
++ 	
++ 	printk(&quot; readdir: Llistant procs del node %s\n&quot;, de-&gt;d_name.name);
++ 
++ 	
++ 	// Obtenim tots els clusters i busquem en quin estem
++ 	num = num_clusters();
++ 	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
++ 	llistar_clusters(llista);
++ 	
++ 	while (llista != NULL &amp;&amp; i==0) {	
++ 		
++ 		printk(&quot; readdir: Busquem el cluster\n&quot;);
++ 		
++ 		if (!strcmp(de-&gt;d_parent-&gt;d_name.name, llista-&gt;nom)) i=1;
++ 		else llista = llista-&gt;next;
++ 	} 
++ 
++ 	// Obtenim  tots els nodes del cluster i busquem en quin estem
++ 	i = 0; 
++ 	num = num_nodes(llista);	
++ 	llista1 = (struct node_t *)kmalloc(sizeof(struct node_t)*num ,GFP_KERNEL);
++ 	llistar_nodes(llista,llista1);
++ 
++ 	while (llista1 != NULL &amp;&amp; i==0) {
++ 		
++ 		printk(&quot; readdir: Busquem el node\n&quot;);
++ 		
++ 		if (!strcmp(de-&gt;d_name.name, llista1-&gt;nom)) i=1;
++ 		else llista1 = llista1-&gt;next;
++ 	}
++     	
++ 	
++ 	// LListem els processos del cluster
++ 	num = num_procs(llista,llista1);	
++ 	llista2 = (struct proces_t *)kmalloc(sizeof(struct proces_t)*num ,GFP_KERNEL);
++ 	llistar_procs(llista,llista1,llista2);
++ 
++ 	while (llista2 != NULL) {
++ 		if(filldir(dirent, llista2-&gt;nom, strlen(llista2-&gt;nom), file-&gt;f_pos++, FILE_INODE_NUMBER, DT_REG ))
++ 			return 0;
++ 		llista2 = llista2-&gt;next;
++ 	}
++ 	
++ 	printk(&quot; readdir: Fitxers per processos creats\n&quot;);
++     	
++ 	
++ 	kfree(llista);
++ 	kfree(llista1);
++ 	kfree(llista2);	
++     }
+      
+      return 1;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000024.html">[Taca-cvs] code/backend/openmosix openmosix.c,1.1,1.2
+</A></li>
+	<LI>Next message: <A HREF="000026.html">[Taca-cvs] code/frontend/linux linux.c,1.1,1.2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#25">[ date ]</a>
+              <a href="thread.html#25">[ thread ]</a>
+              <a href="subject.html#25">[ subject ]</a>
+              <a href="author.html#25">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

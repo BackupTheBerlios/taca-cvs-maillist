@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] code Makefile,1.5,1.6 Rules.conf,1.4,1.5
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code%20Makefile%2C1.5%2C1.6%20Rules.conf%2C1.4%2C1.5&In-Reply-To=%3C200406250020.i5P0KHB22824%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000062.html">
+   <LINK REL="Next"  HREF="000065.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] code Makefile,1.5,1.6 Rules.conf,1.4,1.5</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code%20Makefile%2C1.5%2C1.6%20Rules.conf%2C1.4%2C1.5&In-Reply-To=%3C200406250020.i5P0KHB22824%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] code Makefile,1.5,1.6 Rules.conf,1.4,1.5">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Fri Jun 25 02:20:17 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000062.html">[Taca-cvs] doc 00-taca.bib,1.4,1.5 05.tex,1.4,1.5
+</A></li>
+        <LI>Next message: <A HREF="000065.html">[Taca-cvs] code/backend backend.h,1.3,1.4
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#63">[ date ]</a>
+              <a href="thread.html#63">[ thread ]</a>
+              <a href="subject.html#63">[ subject ]</a>
+              <a href="author.html#63">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/code
+In directory sheep:/tmp/cvs-serv29371
+
+Modified Files:
+	Makefile Rules.conf 
+Log Message:
+Neteja de cara al frontend
+
+
+Index: Makefile
+===================================================================
+RCS file: /cvsroot/taca/code/Makefile,v
+retrieving revision 1.5
+retrieving revision 1.6
+diff -C2 -d -r1.5 -r1.6
+*** Makefile	17 Jun 2004 03:37:31 -0000	1.5
+--- Makefile	25 Jun 2004 00:20:14 -0000	1.6
+***************
+*** 5,8 ****
+--- 5,9 ----
+  # global flags definitions
+  CFLAGS  += -Wall -O2 \
++ 	   $(DEBUG) \
+  	   -D__KERNEL__ -DMODULE \
+  	   -inostdinc \
+
+Index: Rules.conf
+===================================================================
+RCS file: /cvsroot/taca/code/Rules.conf,v
+retrieving revision 1.4
+retrieving revision 1.5
+diff -C2 -d -r1.4 -r1.5
+*** Rules.conf	17 Jun 2004 03:35:42 -0000	1.4
+--- Rules.conf	25 Jun 2004 00:20:14 -0000	1.5
+***************
+*** 4,7 ****
+--- 4,10 ----
+  # General conf
+  
++ # uncomment to see debugging messages on syslog
++ DEBUG = -DDEBUG
++ 
+  # Available Frontends:
+  # - linux.o
+***************
+*** 9,14 ****
+  
+  # Available Backends:
+  # - openmosix.o
+- #BACKEND  = openmosix.o
+  BACKEND  = dummy.o
+  # (!)
+--- 12,17 ----
+  
+  # Available Backends:
++ # - dummy.o
+  # - openmosix.o
+  BACKEND  = dummy.o
+  # (!)
+***************
+*** 20,25 ****
+  MNTPOINT = /mnt/$(FSNAME)
+  
+! INCLUDEDIR = /usr/src/linux-openmosix/include
+! #INCLUDEDIR = /usr/src/kernel-source-2.4.22/include
+  #INCLUDEDIR = /usr/src/linux/include
+  
+--- 23,28 ----
+  MNTPOINT = /mnt/$(FSNAME)
+  
+! #INCLUDEDIR = /usr/src/linux-openmosix/include
+! INCLUDEDIR = /usr/src/kernel-source-2.4.22/include
+  #INCLUDEDIR = /usr/src/linux/include
+  
+***************
+*** 39,43 ****
+  
+  # OpenMosix
+! openmosix_VER = 2.4.22# version to use
+  # (!)
+  OPENMOSIX_CFLAGS += -I$(INCLUDEDIR)
+--- 42,47 ----
+  
+  # OpenMosix
+! # version to use
+! openmosix_VER = 2.4.22
+  # (!)
+  OPENMOSIX_CFLAGS += -I$(INCLUDEDIR)
+***************
+*** 50,53 ****
+  # Exports
+  # (!)
+! export FSNAME BACKVER LINUX_CFLAGS OPENMOSIX_CFLAGS DUMMY_CFLAGS
+  
+--- 54,57 ----
+  # Exports
+  # (!)
+! export FSNAME BACKVER LINUX_CFLAGS OPENMOSIX_CFLAGS DUMMY_CFLAGS DEBUG
+  
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000062.html">[Taca-cvs] doc 00-taca.bib,1.4,1.5 05.tex,1.4,1.5
+</A></li>
+	<LI>Next message: <A HREF="000065.html">[Taca-cvs] code/backend backend.h,1.3,1.4
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#63">[ date ]</a>
+              <a href="thread.html#63">[ thread ]</a>
+              <a href="subject.html#63">[ subject ]</a>
+              <a href="author.html#63">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

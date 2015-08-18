@@ -1,0 +1,462 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] code/frontend/linux linux_common.c,NONE,1.1 linux_common.h,NONE,1.1 root.c,NONE,1.1 Makefile,1.1,1.2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/frontend/linux%20linux_common.c%2CNONE%2C1.1%20linux_common.h%2CNONE%2C1.1%20root.c%2CNONE%2C1.1%20Makefile%2C1.1%2C1.2&In-Reply-To=%3C200406170335.i5H3ZiB19711%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000046.html">
+   <LINK REL="Next"  HREF="000049.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] code/frontend/linux linux_common.c,NONE,1.1 linux_common.h,NONE,1.1 root.c,NONE,1.1 Makefile,1.1,1.2</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/frontend/linux%20linux_common.c%2CNONE%2C1.1%20linux_common.h%2CNONE%2C1.1%20root.c%2CNONE%2C1.1%20Makefile%2C1.1%2C1.2&In-Reply-To=%3C200406170335.i5H3ZiB19711%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] code/frontend/linux linux_common.c,NONE,1.1 linux_common.h,NONE,1.1 root.c,NONE,1.1 Makefile,1.1,1.2">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Thu Jun 17 05:35:44 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000046.html">[Taca-cvs] code Rules.conf,1.3,1.4
+</A></li>
+        <LI>Next message: <A HREF="000049.html">[Taca-cvs] code Makefile,1.4,1.5
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#48">[ date ]</a>
+              <a href="thread.html#48">[ thread ]</a>
+              <a href="subject.html#48">[ subject ]</a>
+              <a href="author.html#48">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/code/frontend/linux
+In directory sheep:/tmp/cvs-serv14194/frontend/linux
+
+Modified Files:
+	Makefile 
+Added Files:
+	linux_common.c linux_common.h root.c 
+Log Message:
+Initial linux frontend rewrite
+
+--- NEW FILE: linux_common.c ---
+/*
+ * linux_common.c
+ *
+ * Operacions comunes a tothom en el VFS de linux
+ */
+
+#include &lt;linux/fs.h&gt;
+#include &lt;linux/pagemap.h&gt;
+#include &lt;linux/dcache.h&gt;
+
+
+/**
+ * tacafs_make_inode - Crea un inode
+ *
+ * Crea un inode o retorna NULL en cas de no poder.
+ **/
+static struct inode *tacafs_make_inode (struct super_block *sb, int mode,
+	struct inode_operations *iops, struct file_operations *fops)
+{
+    struct inode *ret = new_inode(sb);
+
+    if (ret) {
+	ret-&gt;i_mode = mode;
+	ret-&gt;i_uid = ret-&gt;i_gid = 0;
+	ret-&gt;i_blksize = PAGE_CACHE_SIZE;
+	ret-&gt;i_blocks = 0;
+	ret-&gt;i_atime = ret-&gt;i_mtime = ret-&gt;i_ctime = CURRENT_TIME;
+	ret-&gt;i_op = iops;
+	ret-&gt;i_fop = fops;
+    }
+    return ret;
+}
+
+
+/**
+ * tacafs_create_file - Crea un fitxer i el posa a la dentry cache
+ *
+ * Crea el dentry i inode corresponents a un fitxer en un directori i els posa
+ * a la dentry cache per a un acces mes rapid.
+ **/
+static struct dentry *tacafs_create_file (struct super_block *sb, int mode,
+	struct inode_operations *iops, struct file_operations *fops,
+	struct dentry *dir, const char *name)
+{
+    struct dentry *dentry;
+    struct inode *inode;
+    struct qstr qname;
+
+    /*
+     * Versio amb hash del nom per anar a la dentry cache
+     */
+    qname.name = name;
+    qname.len = strlen (name);
+    qname.hash = full_name_hash(name, qname.len);
+    /*
+     * Creem el dentry i l'inode que hi associem
+     */
+    dentry = d_alloc(dir, &amp;qname);
+    if (!dentry)
+	goto out;
+    inode = tacafs_make_inode(sb, S_IFREG | mode, iops, fops);
+    if (!inode)
+	goto out_dput;
+    //inode-&gt;u.generic_ip = dades;
+    /*
+     * Ho posem tot a la dentry cache
+     */
+    d_add(dentry, inode);
+    return dentry;
+    /*
+     *  Alguna cosa no ha anat be
+     */
+out_dput:
+    dput(dentry);
+out:
+    return 0;
+}
+
+
+/*
+ * Buscar les dades. Cas trivial, si el dentry no existia ja a la dentry
+ * cache, es un dentry negatiu.
+ */
+struct dentry *simple_lookup (struct inode *dir, struct dentry *dentry)
+{
+    if (dentry-&gt;d_name.len &gt; NAME_MAX)
+	return ERR_PTR(-ENAMETOOLONG);
+    d_add(dentry, NULL);
+    return NULL;
+}
+
+struct inode_operations simple_dir_inode_operations = {
+    lookup: simple_lookup
+};
+
+
+/**
+ * tacafs_create_dir - Crea un directori i el posa a la dentry cache
+ * @iops: si es NULL, utilitza les funcions per defecte que miren a la dentry
+ *        cache
+ * @fops: si es NULL, utilitza les funcions per defecte que miren a la dentry
+ *        cache
+ * 
+ * Igual que amb un fitxer, crea el dentry, inode i ho posa a la dentry cache.
+ **/
+static struct dentry *tacafs_create_dir (struct super_block *sb, int mode,
+	struct inode_operations *iops, struct file_operations *fops,
+	struct dentry *parent, const char *name)
+{
+    struct dentry *dentry;
+    struct inode *inode;
+    struct qstr qname;
+
+    qname.name = name;
+    qname.len = strlen (name);
+    qname.hash = full_name_hash(name, qname.len);
+    dentry = d_alloc(parent, &amp;qname);
+    if (! dentry)
+	goto out;
+
+    inode = tacafs_make_inode(sb, S_IFDIR | 0644,
+	    iops == NULL ? &amp;simple_dir_inode_operations : iops,
+	    fops == NULL ? &amp;dcache_dir_ops : fops);
+    if (! inode)
+	goto out_dput;
+    d_add(dentry, inode);
+    return dentry;
+
+out_dput:
+    dput(dentry);
+out:
+    return 0;
+}
+
+
+--- NEW FILE: linux_common.h ---
+/*
+ * linux_common.h
+ *
+ * Operacions comunes a tothom en el VFS de linux
+ */
+
+#ifndef _linux_common_h_
+#define _linux_common_h_
+
+struct inode *tacafs_make_inode (struct super_block *, int,
+	struct inode_operations *, struct file_operations *);
+static struct dentry *tacafs_create_file (struct super_block *, int,
+	struct inode_operations *, struct file_operations *, struct dentry *,
+	const char *);
+static struct dentry *tacafs_create_dir (struct super_block *, int,
+	struct inode_operations *, struct file_operations *, struct dentry *,
+	const char *);
+
+extern struct inode_operations simple_dir_inode_operations;
+
+#endif
+
+
+--- NEW FILE: root.c ---
+/*
+ * root.c
+ *
+ * Arrel del nostre sistema de fitxers
+ */
+
+#include &lt;linux/module.h&gt;
+#include &lt;linux/fs.h&gt;
+#include &lt;linux/sched.h&gt;
+
+#include &lt;linux_debug.h&gt;
+
+#include &quot;linux_common.h&quot;
+
+#define TACAFS_MAGIC 0x20040617
+
+
+/*
+ * Funcions
+ */
+static struct super_block *tacafs_read_super (struct super_block *, void *, int);
+void tacafs_s_readinode (struct inode *);
+int tacafs_s_statfs (struct super_block *, struct statfs *);
+struct dentry *tacafs_i_lookup (struct inode *, struct dentry *);
+int tacafs_f_readdir (struct file *, void *, filldir_t);
+
+/*
+ * Estructures
+ */
+
+/* declaracio del file_system_type */
+DECLARE_FSTYPE (tacafs_type, &quot;tacafs&quot;, tacafs_read_super, 0);
+struct inode *tacafs_root_inode;
+
+/* numeros d'inode */
+enum {
+    TACAFS_ROOT_INO = 1
+};
+
+static struct super_operations tacafs_sops = {
+    read_inode: tacafs_s_readinode,
+    statfs: tacafs_s_statfs
+    //  put_inode: tacafs_s_putinode, // inode fora de la cache
+};
+
+static struct inode_operations tacafs_root_iops = {
+    lookup: tacafs_i_lookup
+};
+
+static struct file_operations tacafs_root_fops = {
+    read   : generic_read_dir,
+    readdir: tacafs_f_readdir
+};
+
+
+
+/*
+ * Operacions del sistema de fitxers
+ */
+
+void crea_arbre_estatic (struct super_block *sb)
+{
+    dprint(&quot;creant arbre estatic...\n&quot;);
+    tacafs_create_dir(sb, S_IRWXUGO, NULL, NULL, sb-&gt;s_root, &quot;c1&quot;);
+}
+
+/**
+ * tacafs_read_super - Omple les dades del super bloc
+ *
+ * Cridat en quan el kernel prova de muntar el SF, ens passa el super block en
+ * contruccio per a que l'acabem d'omplir.
+ **/
+static struct super_block *tacafs_read_super (struct super_block *sb, void *buf, int size)
+{
+    sb-&gt;s_blocksize = 1024;
+    sb-&gt;s_blocksize_bits = 10;
+    sb-&gt;s_magic = TACAFS_MAGIC;
+    sb-&gt;s_op = &amp;tacafs_sops; // operacions del super block
+    sb-&gt;s_type = &amp;tacafs_type; // file_system_type
+
+    tacafs_root_inode = tacafs_make_inode(sb, S_IFDIR|S_IRWXU,
+	    &amp;simple_dir_inode_operations, &amp;dcache_dir_ops);
+	    //&amp;tacafs_root_iops, &amp;tacafs_root_fops);
+    if (!tacafs_root_inode)
+	return ERR_PTR(-ENOMEM);
+
+    if(!(sb-&gt;s_root = d_alloc_root(tacafs_root_inode))) { // allocata un dentry
+        iput(tacafs_root_inode);
+	return ERR_PTR(-ENOMEM);
+    }
+
+    crea_arbre_estatic(sb);
+
+    dprint(&quot;s'ha retornat un super_block valid\n&quot;);
+    return sb;
+}
+
+
+/*
+ * Operacions del super_block
+ */
+
+
+/**
+ * tacafs_s_readinode - Cridat per llegir un inode del SF muntat
+ **/
+void tacafs_s_readinode (struct inode *inode)
+{
+    inode-&gt;i_mtime = inode-&gt;i_atime = inode-&gt;i_ctime = CURRENT_TIME;
+    dprint(&quot;\n&quot;);
+}
+
+
+/**
+ * tacafs_s_statfs - Cridat per obtenir informacio del SF com tamany, etc.
+ **/
+int tacafs_s_statfs (struct super_block *sb, struct statfs *buf) {
+    buf-&gt;f_type = TACAFS_MAGIC;
+    buf-&gt;f_bsize = PAGE_SIZE/sizeof(long);
+    buf-&gt;f_bfree = 0;
+    buf-&gt;f_bavail = 0;
+    buf-&gt;f_ffree = 0;
+    buf-&gt;f_namelen = NAME_MAX;
+    dprint(&quot;\n&quot;);
+    return 0;
+}
+
+
+/*
+ * Operacions sobre inodes
+ */
+
+
+/**
+ * tacafs_i_lookup - 
+ * Aquesta funcio genera el inode pel dentry que es vol mirar 
+ * El inode que es vol generar &#233;s &quot;fill&quot; del parent_inode
+ *
+ *
+ * TODO: comprovar que el directori on es vol entrar &#233;s correcte
+ */
+
+struct dentry *tacafs_i_lookup (struct inode *parent_inode, struct dentry *dentry)
+{
+  struct inode *file_inode;
+  
+  dprint(&quot;dentry %s\n&quot;, dentry-&gt;d_name.name);
+  
+  
+  /* Hem de generar el inode per mostrar un clusters (el dentry) 
+   * Per tant un directori
+   */
+  // allocate an inode object
+ // if(!(file_inode = iget( parent_inode-&gt;i_sb, DIR_INODE_NUMBER)))
+      return ERR_PTR(-ENOMEM);
+  //file_inode-&gt;i_size = file_size;
+  file_inode-&gt;i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+//  file_inode-&gt;i_fop = &amp;tacafs_dir_fops;
+//  file_inode-&gt;i_op = &amp;tacafs_iops;
+  //  add the inode to the dentry object
+  d_add(dentry, file_inode);
+
+  dprint(&quot; lookup: inode per cluster %s generat\n&quot;, dentry-&gt;d_name.name);
+  return NULL;
+}
+
+//  readdir: tacafs_f_readdir
+
+/*
+ * Informacio/codi especific dels moduls de linux
+ */
+
+static int __init tacafs_init(void)
+{
+    	return register_filesystem(&amp;tacafs_type);
+}
+
+static void __exit tacafs_exit(void)
+{
+    	unregister_filesystem(&amp;tacafs_type);
+}
+
+module_init(tacafs_init);
+module_exit(tacafs_exit);
+
+//MODULE_INFO(tag, info);
+MODULE_LICENSE(&quot;GPL&quot;);
+MODULE_AUTHOR(&quot;tacafs crew&quot;);
+MODULE_DESCRIPTION(&quot;taca file system module&quot;);
+//MODULE_PARM_DESC(_parm, desc);
+
+
+Index: Makefile
+===================================================================
+RCS file: /cvsroot/taca/code/frontend/linux/Makefile,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -C2 -d -r1.1 -r1.2
+*** Makefile	11 Jun 2004 02:48:48 -0000	1.1
+--- Makefile	17 Jun 2004 03:35:41 -0000	1.2
+***************
+*** 3,7 ****
+  
+  TARGET = linux.o
+! #OBJS   = a.c b.c
+  
+  all: $(TARGET)
+--- 3,7 ----
+  
+  TARGET = linux.o
+! OBJS   = linux_common.o root.o
+  
+  all: $(TARGET)
+***************
+*** 9,14 ****
+  
+  #$(TARGET): $(OBJS)
+  
+  clean:
+! 	rm -f $(TARGET)
+  
+--- 9,15 ----
+  
+  #$(TARGET): $(OBJS)
++ #	ld -r -o $@ $(OBJS)
+  
+  clean:
+! 	rm -f $(TARGET) $(OBJS)
+  
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000046.html">[Taca-cvs] code Rules.conf,1.3,1.4
+</A></li>
+	<LI>Next message: <A HREF="000049.html">[Taca-cvs] code Makefile,1.4,1.5
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#48">[ date ]</a>
+              <a href="thread.html#48">[ thread ]</a>
+              <a href="subject.html#48">[ subject ]</a>
+              <a href="author.html#48">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

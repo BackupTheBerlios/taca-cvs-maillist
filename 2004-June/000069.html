@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] code/frontend/linux linux_common.c,1.2,1.3 root.c,1.2,1.3
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/frontend/linux%20linux_common.c%2C1.2%2C1.3%20root.c%2C1.2%2C1.3&In-Reply-To=%3C200406302032.i5UKWjB21786%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000068.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] code/frontend/linux linux_common.c,1.2,1.3 root.c,1.2,1.3</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/frontend/linux%20linux_common.c%2C1.2%2C1.3%20root.c%2C1.2%2C1.3&In-Reply-To=%3C200406302032.i5UKWjB21786%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] code/frontend/linux linux_common.c,1.2,1.3 root.c,1.2,1.3">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Wed Jun 30 22:32:45 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000068.html">[Taca-cvs] doc 00-taca.bib,1.4,1.5 05.tex,1.4,1.5
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#69">[ date ]</a>
+              <a href="thread.html#69">[ thread ]</a>
+              <a href="subject.html#69">[ subject ]</a>
+              <a href="author.html#69">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/code/frontend/linux
+In directory sheep:/tmp/cvs-serv23620/frontend/linux
+
+Modified Files:
+	linux_common.c root.c 
+Log Message:
+Fixed memory leak
+
+Index: linux_common.c
+===================================================================
+RCS file: /cvsroot/taca/code/frontend/linux/linux_common.c,v
+retrieving revision 1.2
+retrieving revision 1.3
+diff -C2 -d -r1.2 -r1.3
+*** linux_common.c	25 Jun 2004 00:20:16 -0000	1.2
+--- linux_common.c	30 Jun 2004 20:32:43 -0000	1.3
+***************
+*** 40,46 ****
+  	ret-&gt;i_blocks = 0;
+  	ret-&gt;i_atime = ret-&gt;i_mtime = ret-&gt;i_ctime = CURRENT_TIME;
+! 	if (iops)
+  	    ret-&gt;i_op = iops;
+! 	if (fops)
+  	    ret-&gt;i_fop = fops;
+      }
+--- 40,46 ----
+  	ret-&gt;i_blocks = 0;
+  	ret-&gt;i_atime = ret-&gt;i_mtime = ret-&gt;i_ctime = CURRENT_TIME;
+! 	//if (iops)
+  	    ret-&gt;i_op = iops;
+! 	//if (fops)
+  	    ret-&gt;i_fop = fops;
+      }
+
+Index: root.c
+===================================================================
+RCS file: /cvsroot/taca/code/frontend/linux/root.c,v
+retrieving revision 1.2
+retrieving revision 1.3
+diff -C2 -d -r1.2 -r1.3
+*** root.c	25 Jun 2004 00:20:16 -0000	1.2
+--- root.c	30 Jun 2004 20:32:43 -0000	1.3
+***************
+*** 40,45 ****
+  
+  static struct super_operations tacafs_sops = {
+! put_inode: dummy_put_inode,
+! delete_inode: dummy_delete_inode,
+      clear_inode: tacafs_s_clear_inode,
+      read_inode: tacafs_s_read_inode,
+--- 40,45 ----
+  
+  static struct super_operations tacafs_sops = {
+! //put_inode: dummy_put_inode,
+! //delete_inode: dummy_delete_inode,
+      clear_inode: tacafs_s_clear_inode,
+      read_inode: tacafs_s_read_inode,
+***************
+*** 105,109 ****
+      if (inode != tacafs_root_inode) {
+  	dprint(&quot;%s\n&quot;,((struct cluster_t*)inode-&gt;u.generic_ip)-&gt;nom);
+! 	kmem_cache_free(tacafs_inode_cachep, inode);
+      }
+  }
+--- 105,109 ----
+      if (inode != tacafs_root_inode) {
+  	dprint(&quot;%s\n&quot;,((struct cluster_t*)inode-&gt;u.generic_ip)-&gt;nom);
+! 	kmem_cache_free(tacafs_inode_cachep, inode-&gt;u.generic_ip);
+      }
+  }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000068.html">[Taca-cvs] doc 00-taca.bib,1.4,1.5 05.tex,1.4,1.5
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#69">[ date ]</a>
+              <a href="thread.html#69">[ thread ]</a>
+              <a href="subject.html#69">[ subject ]</a>
+              <a href="author.html#69">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

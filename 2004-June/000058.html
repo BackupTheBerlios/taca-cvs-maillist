@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] doc 06.tex,1.1,1.2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20doc%2006.tex%2C1.1%2C1.2&In-Reply-To=%3C200406201658.i5KGwhB12122%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000057.html">
+   <LINK REL="Next"  HREF="000059.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] doc 06.tex,1.1,1.2</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20doc%2006.tex%2C1.1%2C1.2&In-Reply-To=%3C200406201658.i5KGwhB12122%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] doc 06.tex,1.1,1.2">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Sun Jun 20 18:58:43 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000057.html">[Taca-cvs] doc 02.tex,1.9,1.10 04.tex,1.5,1.6 00-taca.bib,1.3,1.4
+</A></li>
+        <LI>Next message: <A HREF="000059.html">[Taca-cvs] doc 06.tex,1.2,1.3
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#58">[ date ]</a>
+              <a href="thread.html#58">[ thread ]</a>
+              <a href="subject.html#58">[ subject ]</a>
+              <a href="author.html#58">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/doc
+In directory sheep:/tmp/cvs-serv30477
+
+Modified Files:
+	06.tex 
+Log Message:
+Nova ampliacio: sist. fitx. translucid
+
+Index: 06.tex
+===================================================================
+RCS file: /cvsroot/taca/doc/06.tex,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -C2 -d -r1.1 -r1.2
+*** 06.tex	19 Jun 2004 19:33:12 -0000	1.1
+--- 06.tex	20 Jun 2004 16:58:41 -0000	1.2
+***************
+*** 9,13 ****
+  	en el nostre arbre, se seleccionaria el \textit{backend} corresponent
+  	per a dur a terme la operaci&#243; sol&#183;licitada.
+! 	
+      \item \textbf{Recol&#183;lecci&#243; d'informaci&#243; remota} \\
+  	Donades les limitacions d'\textit{OpenMosix} a l'hora d'accedir a la
+--- 9,13 ----
+  	en el nostre arbre, se seleccionaria el \textit{backend} corresponent
+  	per a dur a terme la operaci&#243; sol&#183;licitada.
+! 
+      \item \textbf{Recol&#183;lecci&#243; d'informaci&#243; remota} \\
+  	Donades les limitacions d'\textit{OpenMosix} a l'hora d'accedir a la
+***************
+*** 22,25 ****
+  	tamb&#233;, la limitaci&#243; que nosaltres mateixos hem posat de crear
+  	processos des d'un sol node com a punt d'entrada.
+- \end{description}
+  
+--- 22,47 ----
+  	tamb&#233;, la limitaci&#243; que nosaltres mateixos hem posat de crear
+  	processos des d'un sol node com a punt d'entrada.
+  
++     \item \textbf{Arquitectura transl&#250;cida} \\
++ 	A vegades es pot donar el cas de qu&#232; un sistema de clustering concret
++ 	proporcioni uns serveis molt espec&#237;fics d'aquest, de forma que des del
++ 	\textit{frontend} es podria oferir una interf&#237;cie gen&#232;rica que permet&#233;s al
++ 	\textit{backend} definir aquesta part m&#233;s espec&#237;fica de l'arbre de directoris.
++ 	
++ 	Aquesta soluci&#243;, per&#242;, requeriria que, en major o menor mesura, el mateix
++ 	\textit{backend} proporcion&#233;s les seves pr&#242;pies funcions de generaci&#243; de
++ 	l'arbre espec&#237;fic, proporcionant quelcom semblant a una versi&#243; redu&#239;da del
++ 	\textit{frontend}.
++ 	
++ 	Duent-ho m&#233;s enll&#224;, per&#242;, es podria arribar a crear una s&#232;rie d'estructures i
++ 	funcions gen&#232;riques que evitessin aquesta feina a la capa d'abaix, tot i que
++ 	un sistema de clustering sol anar molt lligat al sistema operatiu i, comparant
++ 	les dues APIs de sistemes de fitxers que hem mirat (el VFS de Linux i el de
++ 	GNU/Hurd), hem vist que, tret de petits detalls, les funcionalitats que
++ 	ofereixen s&#243;n les mateixes o molt similars, de manera que no seria molt
++ 	dif&#237;cil generalitzarn-ne una interf&#237;cie i amagar-ne els detalls en camps
++ 	dedicats a la la informaci&#243; espec&#237;fica de cada sistema (tal com ja fa Linux
++ 	amb els sistemes de fitxers, que reserva un camp que &#233;s un simple apuntador a
++ 	dins dels inodes per a que cada sistema de fitxers hi posi la informaci&#243; que
++ 	consideri necess&#224;ria.
++ \end{description}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000057.html">[Taca-cvs] doc 02.tex,1.9,1.10 04.tex,1.5,1.6 00-taca.bib,1.3,1.4
+</A></li>
+	<LI>Next message: <A HREF="000059.html">[Taca-cvs] doc 06.tex,1.2,1.3
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#58">[ date ]</a>
+              <a href="thread.html#58">[ thread ]</a>
+              <a href="subject.html#58">[ subject ]</a>
+              <a href="author.html#58">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

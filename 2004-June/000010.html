@@ -1,0 +1,924 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] codi Makefile,NONE,1.1 generic.h,NONE,1.1 inode.c,NONE,1.1 linux_tacafs.c,NONE,1.1 mosix.c,NONE,1.1 rkfs.c,NONE,1.1
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20codi%20Makefile%2CNONE%2C1.1%20generic.h%2CNONE%2C1.1%20inode.c%2CNONE%2C1.1%20linux_tacafs.c%2CNONE%2C1.1%20mosix.c%2CNONE%2C1.1%20rkfs.c%2CNONE%2C1.1&In-Reply-To=%3C200406101749.i5AHnhB07393%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000009.html">
+   <LINK REL="Next"  HREF="000011.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] codi Makefile,NONE,1.1 generic.h,NONE,1.1 inode.c,NONE,1.1 linux_tacafs.c,NONE,1.1 mosix.c,NONE,1.1 rkfs.c,NONE,1.1</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20codi%20Makefile%2CNONE%2C1.1%20generic.h%2CNONE%2C1.1%20inode.c%2CNONE%2C1.1%20linux_tacafs.c%2CNONE%2C1.1%20mosix.c%2CNONE%2C1.1%20rkfs.c%2CNONE%2C1.1&In-Reply-To=%3C200406101749.i5AHnhB07393%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] codi Makefile,NONE,1.1 generic.h,NONE,1.1 inode.c,NONE,1.1 linux_tacafs.c,NONE,1.1 mosix.c,NONE,1.1 rkfs.c,NONE,1.1">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Thu Jun 10 19:49:43 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000009.html">[Taca-cvs] codi - New directory
+</A></li>
+        <LI>Next message: <A HREF="000011.html">[Taca-cvs] code - New directory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#10">[ date ]</a>
+              <a href="thread.html#10">[ thread ]</a>
+              <a href="subject.html#10">[ subject ]</a>
+              <a href="author.html#10">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/codi
+In directory sheep:/tmp/cvs-serv14925
+
+Added Files:
+	Makefile generic.h inode.c linux_tacafs.c mosix.c rkfs.c 
+Log Message:
+Ja tenim codi!
+
+
+--- NEW FILE: Makefile ---
+all: 
+	gcc -Wall -O2 -D__KERNEL__ -DMODULE -I/lib/modules/`uname -r`/build/include -c rkfs.c mosix.c
+	ld -r -o taca.o rkfs.o mosix.o
+
+clean:
+	rm -rf *.o
+
+--- NEW FILE: generic.h ---
+struct cluster_t {
+
+	char *nom;
+	struct cluster_t *next;
+};
+
+struct node_t {
+
+	char *nom;
+	struct node_t *next;
+};
+
+struct proces_t {
+	
+	char *nom;
+	struct proces_t *next;
+};
+
+
+
+int llistar_clusters (struct cluster_t *llista);
+
+int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista);
+
+int liistar_procs (struct node_t *node_id, struct proces_t *lista);
+
+
+
+int migrar (struct proces_t  *proces, struct node_t *node_desti);
+
+/* El node pot rebre procs. nous ? */
+int node_bloquejat_rebre (struct node_t *node);
+
+/* El node pot enviar procs. nous ? */
+int node_bloquejat_enviar (struct node_t *node);
+
+/* El proces no es pot migrar */
+int proces_bloquejat (struct proces_t *proc);
+
+
+--- NEW FILE: inode.c ---
+/*
+ * Resizable simple taca filesystem for Linux.
+ *
+ * Copyright (C) 2000 Linus Torvalds.
+ *               2000 Transmeta Corp.
+ *
+ * Usage limits added by David Gibson, Linuxcare Australia.
+ * This file is released under the GPL.
+ */
+
+/*
+ * NOTE! This filesystem is probably most useful
+ * not as a real filesystem, but as an example of
+ * how virtual filesystems can be written.
+ *
+ * It doesn't get much simpler than this. Consider
+ * that this file implements the full semantics of
+ * a POSIX-compliant read-write filesystem.
+ *
+ * Note in particular how the filesystem does not
+ * need to implement any data structures of its own
+ * to keep track of the virtual data: using the VFS
+ * caches is sufficient.
+ */
+
+#include &lt;linux/module.h&gt;
+#include &lt;linux/fs.h&gt;
+#include &lt;linux/pagemap.h&gt;
+#include &lt;linux/init.h&gt;
+#include &lt;linux/string.h&gt;
+#include &lt;linux/locks.h&gt;
+
+#include &lt;asm/uaccess.h&gt;
+
+/* some random number */
+#define TACAFS_MAGIC	0x4376a3f1
+
+static struct super_operations tacafs_ops;
+static struct address_space_operations tacafs_aops;
+static struct file_operations tacafs_file_operations;
+static struct inode_operations tacafs_dir_inode_operations;
+
+static int tacafs_statfs(struct super_block *sb, struct statfs *buf)
+{
+	buf-&gt;f_type = TACAFS_MAGIC;
+	buf-&gt;f_bsize = PAGE_CACHE_SIZE;
+	buf-&gt;f_namelen = 255;
+	return 0;
+}
+
+/*
+ * Lookup the data. This is trivial - if the dentry didn't already
+ * exist, we know it is negative.
+ */
+static struct dentry * tacafs_lookup(struct inode *dir, struct dentry *dentry)
+{
+	d_add(dentry, NULL);
+	return NULL;
+}
+
+/*
+ * Read a page. Again trivial. If it didn't already exist
+ * in the page cache, it is zero-filled.
+ */
+static int tacafs_readpage(struct file *file, struct page * page)
+{
+	if (!Page_Uptodate(page)) {
+		memset(kmap(page), 0, PAGE_CACHE_SIZE);
+		kunmap(page);
+		flush_dcache_page(page);
+		SetPageUptodate(page);
+	}
+	UnlockPage(page);
+	return 0;
+}
+
+static int tacafs_prepare_write(struct file *file, struct page *page, unsigned offset, unsigned to)
+{
+	void *addr = kmap(page);
+	if (!Page_Uptodate(page)) {
+		memset(addr, 0, PAGE_CACHE_SIZE);
+		flush_dcache_page(page);
+		SetPageUptodate(page);
+	}
+	SetPageDirty(page);
+	return 0;
+}
+
+static int tacafs_commit_write(struct file *file, struct page *page, unsigned offset, unsigned to)
+{
+	struct inode *inode = page-&gt;mapping-&gt;host;
+	loff_t pos = ((loff_t)page-&gt;index &lt;&lt; PAGE_CACHE_SHIFT) + to;
+
+	kunmap(page);
+	if (pos &gt; inode-&gt;i_size)
+		inode-&gt;i_size = pos;
+	return 0;
+}
+
+struct inode *tacafs_get_inode(struct super_block *sb, int mode, int dev)
+{
+	struct inode * inode = new_inode(sb);
+
+	if (inode) {
+		inode-&gt;i_mode = mode;
+		inode-&gt;i_uid = current-&gt;fsuid;
+		inode-&gt;i_gid = current-&gt;fsgid;
+		inode-&gt;i_blksize = PAGE_CACHE_SIZE;
+		inode-&gt;i_blocks = 0;
+		inode-&gt;i_rdev = NODEV;
+		inode-&gt;i_mapping-&gt;a_ops = &amp;tacafs_aops;
+		inode-&gt;i_atime = inode-&gt;i_mtime = inode-&gt;i_ctime = CURRENT_TIME;
+		switch (mode &amp; S_IFMT) {
+		default:
+			init_special_inode(inode, mode, dev);
+			break;
+		case S_IFREG:
+			inode-&gt;i_fop = &amp;tacafs_file_operations;
+			break;
+		case S_IFDIR:
+			inode-&gt;i_op = &amp;tacafs_dir_inode_operations;
+			inode-&gt;i_fop = &amp;dcache_dir_ops;
+			break;
+		case S_IFLNK:
+			inode-&gt;i_op = &amp;page_symlink_inode_operations;
+			break;
+		}
+	}
+	return inode;
+}
+
+/*
+ * File creation. Allocate an inode, and we're done..
+ */
+static int tacafs_mknod(struct inode *dir, struct dentry *dentry, int mode, int dev)
+{
+	struct inode * inode = tacafs_get_inode(dir-&gt;i_sb, mode, dev);
+	int error = -ENOSPC;
+
+	if (inode) {
+		d_instantiate(dentry, inode);
+		dget(dentry);		/* Extra count - pin the dentry in core */
+		error = 0;
+	}
+	return error;
+}
+
+static int tacafs_mkdir(struct inode * dir, struct dentry * dentry, int mode)
+{
+	return tacafs_mknod(dir, dentry, mode | S_IFDIR, 0);
+}
+
+static int tacafs_create(struct inode *dir, struct dentry *dentry, int mode)
+{
+	return tacafs_mknod(dir, dentry, mode | S_IFREG, 0);
+}
+
+/*
+ * Link a file..
+ */
+static int tacafs_link(struct dentry *old_dentry, struct inode * dir, struct dentry * dentry)
+{
+	struct inode *inode = old_dentry-&gt;d_inode;
+
+	if (S_ISDIR(inode-&gt;i_mode))
+		return -EPERM;
+
+	inode-&gt;i_nlink++;
+	atomic_inc(&amp;inode-&gt;i_count);	/* New dentry reference */
+	dget(dentry);		/* Extra pinning count for the created dentry */
+	d_instantiate(dentry, inode);
+	return 0;
+}
+
+static inline int tacafs_positive(struct dentry *dentry)
+{
+	return dentry-&gt;d_inode &amp;&amp; !d_unhashed(dentry);
+}
+
+/*
+ * Check that a directory is empty (this works
+ * for regular files too, they'll just always be
+ * considered empty..).
+ *
+ * Note that an empty directory can still have
+ * children, they just all have to be negative..
+ */
+static int tacafs_empty(struct dentry *dentry)
+{
+	struct list_head *list;
+
+	spin_lock(&amp;dcache_lock);
+	list = dentry-&gt;d_subdirs.next;
+
+	while (list != &amp;dentry-&gt;d_subdirs) {
+		struct dentry *de = list_entry(list, struct dentry, d_child);
+
+		if (tacafs_positive(de)) {
+			spin_unlock(&amp;dcache_lock);
+			return 0;
+		}
+		list = list-&gt;next;
+	}
+	spin_unlock(&amp;dcache_lock);
+	return 1;
+}
+
+/*
+ * This works for both directories and regular files.
+ * (non-directories will always have empty subdirs)
+ */
+static int tacafs_unlink(struct inode * dir, struct dentry *dentry)
+{
+	int retval = -ENOTEMPTY;
+
+	if (tacafs_empty(dentry)) {
+		struct inode *inode = dentry-&gt;d_inode;
+
+		inode-&gt;i_nlink--;
+		dput(dentry);			/* Undo the count from &quot;create&quot; - this does all the work */
+		retval = 0;
+	}
+	return retval;
+}
+
+#define tacafs_rmdir tacafs_unlink
+
+/*
+ * The VFS layer already does all the dentry stuff for rename,
+ * we just have to decrement the usage count for the target if
+ * it exists so that the VFS layer correctly free's it when it
+ * gets overwritten.
+ */
+static int tacafs_rename(struct inode * old_dir, struct dentry *old_dentry, struct inode * new_dir,struct dentry *new_dentry)
+{
+	int error = -ENOTEMPTY;
+
+	if (tacafs_empty(new_dentry)) {
+		struct inode *inode = new_dentry-&gt;d_inode;
+		if (inode) {
+			inode-&gt;i_nlink--;
+			dput(new_dentry);
+		}
+		error = 0;
+	}
+	return error;
+}
+
+static int tacafs_symlink(struct inode * dir, struct dentry *dentry, const char * symname)
+{
+	int error;
+
+	error = tacafs_mknod(dir, dentry, S_IFLNK | S_IRWXUGO, 0);
+	if (!error) {
+		int l = strlen(symname)+1;
+		struct inode *inode = dentry-&gt;d_inode;
+		error = block_symlink(inode, symname, l);
+	}
+	return error;
+}
+
+static int tacafs_sync_file(struct file * file, struct dentry *dentry, int datasync)
+{
+	return 0;
+}
+
+static struct address_space_operations tacafs_aops = {
+	readpage:	tacafs_readpage,
+	writepage:	fail_writepage,
+	prepare_write:	tacafs_prepare_write,
+	commit_write:	tacafs_commit_write
+};
+
+static struct file_operations tacafs_file_operations = {
+	read:		generic_file_read,
+	write:		generic_file_write,
+	mmap:		generic_file_mmap,
+	fsync:		tacafs_sync_file,
+};
+
+static struct inode_operations tacafs_dir_inode_operations = {
+	create:		tacafs_create,
+	lookup:		tacafs_lookup,
+	link:		tacafs_link,
+	unlink:		tacafs_unlink,
+	symlink:	tacafs_symlink,
+	mkdir:		tacafs_mkdir,
+	rmdir:		tacafs_rmdir,
+	mknod:		tacafs_mknod,
+	rename:		tacafs_rename,
+};
+
+static struct super_operations tacafs_ops = {
+	statfs:		tacafs_statfs,
+	put_inode:	force_delete,
+};
+
+static struct super_block *tacafs_read_super(struct super_block * sb, void * data, int silent)
+{
+	struct inode * inode;
+	struct dentry * root;
+
+	sb-&gt;s_blocksize = PAGE_CACHE_SIZE;
+	sb-&gt;s_blocksize_bits = PAGE_CACHE_SHIFT;
+	sb-&gt;s_magic = TACAFS_MAGIC;
+	sb-&gt;s_op = &amp;tacafs_ops;
+	inode = tacafs_get_inode(sb, S_IFDIR | 0755, 0);
+	if (!inode)
+		return NULL;
+
+	root = d_alloc_root(inode);
+	if (!root) {
+		iput(inode);
+		return NULL;
+	}
+	sb-&gt;s_root = root;
+	return sb;
+}
+
+static DECLARE_FSTYPE(tacafs_fs_type, &quot;tacafs&quot;, tacafs_read_super, FS_LITTER);
+static DECLARE_FSTYPE(rootfs_fs_type, &quot;rootfs&quot;, tacafs_read_super, FS_NOMOUNT|FS_LITTER);
+
+static int __init init_tacafs_fs(void)
+{
+	return register_filesystem(&amp;tacafs_fs_type);
+}
+
+static void __exit exit_tacafs_fs(void)
+{
+	unregister_filesystem(&amp;tacafs_fs_type);
+}
+
+module_init(init_tacafs_fs)
+module_exit(exit_tacafs_fs)
+
+int __init init_rootfs(void)
+{
+	return register_filesystem(&amp;rootfs_fs_type);
+}
+
+MODULE_LICENSE(&quot;GPL&quot;);
+
+
+--- NEW FILE: linux_tacafs.c ---
+#define MODULE
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
+#include &lt;linux/init.h&gt;
+
+static struct super_block *tacafs_read_super(struct super_block *, void *, int);
+static int tacafs_fill_super (struct super_block *, void *, int);
+
+
+static DECLARE_FSTYPE(tacafs_fs_type, &quot;tacafs&quot;, tacafs_read_super);
+
+
+
+
+struct file_system_type tacafs_fs_type = {
+	.owner = THIS_MODULE,
+	.name = &quot;tacafs&quot;,
+	.read_super = tacafs_read_super,
+};
+
+static struct super_operations tacafs_s_ops = {
+	.statfs         = simple_statfs,	//depen de libfs
+	.drop_inode     = generic_delete_inode, //depen de libfs
+};
+
+
+
+
+
+struct inode *tacafs_get_inode(struct super_block *sb, int mode, int dev)
+{
+	struct inode * inode = new_inode(sb);
+
+	if (inode) {
+		inode-&gt;i_mode = mode;
+		inode-&gt;i_uid = current-&gt;fsuid;
+		inode-&gt;i_gid = current-&gt;fsgid;
+		inode-&gt;i_blksize = PAGE_CACHE_SIZE;
+		inode-&gt;i_blocks = 0;
+		inode-&gt;i_rdev = NODEV;
+		inode-&gt;i_mapping-&gt;a_ops = &amp;tacafs_s_aops;
+		inode-&gt;i_atime = inode-&gt;i_mtime = inode-&gt;i_ctime = CURRENT_TIME;
+		switch (mode &amp; S_IFMT) {
+			default:
+				init_special_inode(inode, mode, dev);
+				break;
+			case S_IFREG:
+				inode-&gt;i_fop = &amp;tacafs_file_operations;
+				break;
+			case S_IFDIR:
+				inode-&gt;i_op = &amp;tacafs_dir_inode_operations;
+				inode-&gt;i_fop = &amp;dcache_dir_ops;
+				break;
+			case S_IFLNK:
+				inode-&gt;i_op = &amp;page_symlink_inode_operations;
+				break;
+		}
+	}
+	return inode;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * Operacio per llegir el superblock
+ */
+static struct super_block *tacafs_get_super(struct file_system_type *fst,
+				int flags, const char *devname, void *data)
+{
+		return get_sb_single(fst, flags, data, tacafs_fill_super);
+}
+
+/* 
+ * Operacio per omplir camps del superblock
+ */
+static int tacafs_fill_super (struct super_block *sb, void *data, int silent) {
+	
+tatic struct super_block *tacafs_read_super(struct super_block * sb, void * data, int silent)
+{
+	struct inode * inode;
+	struct dentry * root;
+
+	sb-&gt;s_blocksize = PAGE_CACHE_SIZE;
+	sb-&gt;s_blocksize_bits = PAGE_CACHE_SHIFT;
+	sb-&gt;s_magic = TACAFS_MAGIC;
+	sb-&gt;s_op = &amp;tacafs_s_ops;
+	inode = tacafs_get_inode(sb, S_IFDIR | 0755, 0);
+	if (!inode)
+		return NULL;
+
+	root = d_alloc_root(inode);
+	if (!root) {
+		iput(inode);
+		return NULL;
+	}
+	sb-&gt;s_root = root;
+	return sb;
+}
+
+
+}
+
+static int __init init_tacafs_fs(void)
+{
+	        return register_filesystem(&amp;tacafs_fs_type);
+}
+
+static void __exit exit_tacafs_fs(void)
+{
+	        unregister_filesystem(&amp;tacafs_fs_type);
+}
+
+module_init(init_tacafs_fs);
+module_exit(exit_tacafs_fs);
+
+	
+
+
+
+
+
+
+
+
+
+int init_module(void)      
+{ 
+	//printk(KERN_INFO &quot;Hello, world\n&quot;); 
+	return register_filesystem(&amp;tacafs_type);
+}
+
+
+struct file_system_type lfs_type = {
+	.owner 	= THIS_MODULE,
+	.name	= &quot;lwnfs&quot;,
+	.get_sb	= lfs_get_super,
+	.kill_sb	= kill_litter_super,
+};
+
+
+
+--- NEW FILE: mosix.c ---
+#include &quot;generic.h&quot;
+#include &lt;linux/mm.h&gt;
+
+
+//struct cluster_t clus = {.nom = &quot;123&quot;,
+//			 .next = NULL};
+
+struct node_t n3 = {	.nom = &quot;n3&quot;,
+			.next = NULL};
+struct node_t n2 = {	.nom = &quot;n2&quot;,
+			.next = &amp;n3 };
+struct node_t n1 = {	.nom = &quot;n1&quot;,
+			.next = &amp;n2};
+
+struct proces_t p3 = {	.nom = &quot;proc3&quot;,
+			.next = NULL};
+
+struct proces_t p2 = {	.nom = &quot;proc2&quot;,
+			.next = &amp;p3};
+struct proces_t p1 = {	.nom = &quot;proc1&quot;,
+			.next = &amp;p2};
+
+int llistar_clusters (struct cluster_t *llista)
+{
+	//llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t) ,GFP_KERNEL);	
+	llista-&gt;nom = &quot;c1&quot; ;
+	llista-&gt;next = NULL;
+	return 0;
+}
+
+int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista)
+{
+	//llista[0] = &amp;n1;
+	//llista[1] = &amp;n2;
+	//llista[2] = &amp;n3;
+	
+}
+
+int liistar_procs (struct node_t *node_id, struct proces_t *llista)
+{
+	//llista[0] = &amp;p1;
+	//llista[1] = &amp;p2;
+	//llista[2] = &amp;p3;
+}
+
+
+//int migrar (struct proces_t  *proces, struct node_t *node_desti);
+
+/* El node pot rebre procs. nous ? */
+//int node_bloquejat_rebre (struct node_t *node);
+
+/* El node pot enviar procs. nous ? */
+//int node_bloquejat_enviar (struct node_t *node);
+
+/* El proces no es pot migrar */
+//int proces_bloquejat (struct proces_t *proc);
+
+
+--- NEW FILE: rkfs.c ---
+/**
+ * Notes:
+ * Implementing a small filesystem having one file
+ *
+ * -&gt; What happens when we mount a file system?
+ * -&gt; What do we need to provide to the kernel so that we are mountable?
+ * -&gt; What inode, dentry and file operations do we have to support?
+ */
+
+#include &lt;linux/kernel.h&gt;
+#include &lt;linux/module.h&gt;
+#include &lt;linux/version.h&gt;
+/*
+  #if CONFIG_MODVERSIONS==1
+  #define MODVERSIONS
+  #include &lt;linux/modversions.h&gt;
+  #endif
+*/
+#include &lt;linux/fs.h&gt;
+#include &lt;linux/sched.h&gt;
+
+#include &lt;linux/mm.h&gt;
+
+#include &quot;generic.h&quot;
+
+#define RKFS_MAGIC 0xabcd
+#define FILE_INODE_NUMBER 2
+
+static struct super_block *rkfs_read_super(struct super_block *, void *, int);
+void rkfs_s_readinode( struct inode *inode );
+int rkfs_s_statfs( struct super_block *sb, struct statfs *buf );
+struct dentry *rkfs_i_lookup( struct inode *parent_inode, struct dentry *dentry );
+ssize_t rkfs_f_read( struct file *file, char *buf, size_t max, loff_t *len );
+int rkfs_f_readdir( struct file *file, void *dirent, filldir_t filldir );
+ssize_t rkfs_f_write (struct file *, const char *, size_t, loff_t *);
+int rkfs_f_release (struct inode *, struct file *);
+
+/*
+ * Data declarations
+ */
+
+static struct super_operations rkfs_sops = {
+    read_inode: rkfs_s_readinode,
+    statfs: rkfs_s_statfs
+    //  put_inode: rkfs_s_putinode,
+    //  delete_inode:    rkfs_s_deleteinode,
+    //  statfs: rkfs_s_statfs
+};
+
+struct inode_operations rkfs_iops = {
+    lookup: rkfs_i_lookup
+};
+
+struct file_operations rkfs_dir_fops = {
+    read   : generic_read_dir,
+    readdir: &amp;rkfs_f_readdir
+};
+
+struct file_operations rkfs_file_fops = {
+    read : &amp;rkfs_f_read,
+    write: &amp;rkfs_f_write
+    //    release: &amp;rkfs_f_release
+};
+
+// use this macro to declare the filesystem structure
+DECLARE_FSTYPE( rkfs, &quot;rkfs&quot;, rkfs_read_super, 0 );
+struct inode *rkfs_root_inode;
+
+char file_buf[1024] = &quot;Hello World\n&quot;;
+int file_size = 12;
+
+/*
+ * File-System Operations
+ */
+/*
+ * This will be called when the kernel is attempting to mount something. It creates a
+ * super_block structure and calls our callback/function to fill it.
+ */
+static struct super_block *rkfs_read_super( struct super_block *sb, void *buf, int size ) {
+    sb-&gt;s_blocksize = 1024;
+    sb-&gt;s_blocksize_bits = 10;
+    sb-&gt;s_magic = RKFS_MAGIC;
+    sb-&gt;s_op = &amp;rkfs_sops; // super block operations
+    sb-&gt;s_type = &rkfs; // file_system_type
+
+    rkfs_root_inode = iget( sb, 1 ); // allocate an inode
+    rkfs_root_inode-&gt;i_op = &amp;rkfs_iops; // set the inode ops
+    rkfs_root_inode-&gt;i_mode = S_IFDIR|S_IRWXU;
+    rkfs_root_inode-&gt;i_fop = &amp;rkfs_dir_fops;
+
+    if(!(sb-&gt;s_root = d_alloc_root(rkfs_root_inode))) {
+        iput(rkfs_root_inode);
+        return NULL;
+    }
+
+    printk( &quot;rkfs: read_super returning a valid super_block\n&quot; );
+    return sb;
+}
+
+/*
+ * Super-Block Operations
+ */
+
+void rkfs_s_readinode( struct inode *inode ) {
+    inode-&gt;i_mtime = inode-&gt;i_atime = inode-&gt;i_ctime = CURRENT_TIME;
+    printk( &quot;rkfs: super_operations.readinode called\n&quot; );
+}
+
+/*
+ * This will be called to get the filesystem information like size etc.
+ */
+int rkfs_s_statfs( struct super_block *sb, struct statfs *buf ) {
+    buf-&gt;f_type = RKFS_MAGIC;
+    buf-&gt;f_bsize = PAGE_SIZE/sizeof(long);
+    buf-&gt;f_bfree = 0;
+    buf-&gt;f_bavail = 0;
+    buf-&gt;f_ffree = 0;
+    buf-&gt;f_namelen = NAME_MAX;
+    printk( &quot;rkfs: super_operations.statfs called\n&quot; );
+    return 0;
+}
+
+/*
+ * Inode Operations
+ */
+
+struct dentry *rkfs_i_lookup( struct inode *parent_inode, struct dentry *dentry ) {
+  struct inode *file_inode;
+
+  if( parent_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino &amp;&amp; strlen(&quot;hello.txt&quot;) == dentry-&gt;d_name.len &amp;&amp; !strcmp(dentry-&gt;d_name.name, &quot;hello.txt&quot;)) {
+	  // allocate an inode object
+	  if(!(file_inode = iget( parent_inode-&gt;i_sb, FILE_INODE_NUMBER )))
+		  return ERR_PTR(-ENOMEM);
+	  file_inode-&gt;i_size = file_size;
+	  file_inode-&gt;i_mode = S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+	  file_inode-&gt;i_fop = &amp;rkfs_file_fops;
+	  //  add the inode to the dentry object
+	  d_add(dentry, file_inode);
+  }
+  if( parent_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino &amp;&amp; strlen(&quot;tonto&quot;) == dentry-&gt;d_name.len &amp;&amp; !strcmp(dentry-&gt;d_name.name, &quot;tonto&quot;)) {
+	  // allocate an inode object
+	  if(!(file_inode = iget( parent_inode-&gt;i_sb, 3)))
+		  return ERR_PTR(-ENOMEM);
+	  //file_inode-&gt;i_size = file_size;
+	  file_inode-&gt;i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+	  file_inode-&gt;i_fop = &amp;rkfs_file_fops;
+	  file_inode-&gt;i_op = &amp;rkfs_iops;
+	  //  add the inode to the dentry object
+	  d_add(dentry, file_inode);
+  }
+  else {
+      return ERR_PTR(-ENOENT);
+  }
+  printk( &quot;rkfs: inode_operations.lookup called with dentry %s. size = %d\n&quot;, dentry-&gt;d_name.name, file_size );
+  return NULL;
+}
+
+/*
+ * File Operations
+ */
+
+ssize_t rkfs_f_read( struct file *file, char *buf, size_t max, loff_t *offset ) {
+    int i;
+    int buflen;
+    if(*offset &gt; 0)
+        return 0;
+    printk( &quot;rkfs: file_operations.read called %d %d\n&quot;, max, *offset );
+    buflen = file_size &gt; max ? max : file_size;
+    __generic_copy_to_user(buf, file_buf, buflen);
+    //           copy_to_user(buf, file_buf, buflen);
+    *offset += buflen; // advance the offset
+    return buflen;
+}
+
+ssize_t rkfs_f_write (struct file *file, const char *buf, size_t maxlen, loff_t *offset) {
+    int count;
+    if(*offset &gt; 0) {
+        printk(&quot;Positive offset %d\n&quot;, *offset);
+        return 0;
+    }
+    count = maxlen &gt; sizeof(file_buf) ? sizeof(file_buf) : maxlen;
+    __generic_copy_from_user(file_buf, buf, count);
+        //    copy_from_user(file_buf, buf, maxlen);
+    printk( &quot;file_operations.write called with maxlen=%d, off=%d\n&quot;, maxlen, *offset );
+    *offset += count;
+    if(*offset &gt; file_size)
+        file_size = *offset;
+    return count;
+}
+
+/*
+int rkfs_f_release (struct inode *ino, struct file *file) {
+    printk( &quot;rkfs: file_operations.release called\n&quot; );
+    return 0;
+}
+*/
+
+int rkfs_f_readdir( struct file *file, void *dirent, filldir_t filldir ) {
+    int err;
+    struct dentry *de = file-&gt;f_dentry;
+
+    printk( &quot;rkfs: file_operations.readdir called\n&quot; );
+    if(file-&gt;f_pos &gt; 0 )
+        return 1;
+    
+    if(filldir(dirent, &quot;.&quot;, 1, file-&gt;f_pos++, de-&gt;d_inode-&gt;i_ino, DT_DIR)||
+       (filldir(dirent, &quot;..&quot;, 2, file-&gt;f_pos++, de-&gt;d_parent-&gt;d_inode-&gt;i_ino, DT_DIR)))
+        return 0;
+    
+    if(de-&gt;d_inode-&gt;i_ino == rkfs_root_inode-&gt;i_ino) // Estem a l'arrel 
+    {
+	struct cluster_t *llista;
+	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t) ,GFP_KERNEL);	
+	llistar_clusters(llista);
+
+    	printk( &quot;rkfs: file_operations.readdir called caca\n&quot; );
+	while (llista != NULL) {	
+		if(filldir(dirent, llista-&gt;nom, strlen(llista-&gt;nom), file-&gt;f_pos++, 3, DT_DIR ))
+	         	return 0;
+		llista = llista-&gt;next;
+    	printk( &quot;rkfs: file_operations.readdir called bucle\n&quot; );
+	} 
+    printk( &quot;rkfs: file_operations.readdir calledi final\n&quot; );
+		
+    }
+//	    if(filldir(dirent, &quot;hello.txt&quot;, 9, file-&gt;f_pos++, FILE_INODE_NUMBER, DT_REG ))
+	    
+  //  if(filldir(dirent, &quot;hello.txt&quot;, 9, file-&gt;f_pos++, FILE_INODE_NUMBER, DT_REG ))
+    //    return 0;
+    /* Mostrar subdirs */
+//    if(filldir(dirent, &quot;tonto&quot;, 5, file-&gt;f_pos++, 3, DT_DIR ))
+//        return 0;
+    
+    
+    return 1;
+}
+
+int init_module(void) {
+    int err;
+    err = register_filesystem( &amp;rkfs );
+    return err;
+}
+
+void cleanup_module(void) {
+    unregister_filesystem( &amp;rkfs );
+}
+
+MODULE_LICENSE(&quot;GPL&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000009.html">[Taca-cvs] codi - New directory
+</A></li>
+	<LI>Next message: <A HREF="000011.html">[Taca-cvs] code - New directory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#10">[ date ]</a>
+              <a href="thread.html#10">[ thread ]</a>
+              <a href="subject.html#10">[ subject ]</a>
+              <a href="author.html#10">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>

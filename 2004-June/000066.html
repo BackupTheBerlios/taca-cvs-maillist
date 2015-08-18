@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Taca-cvs] code/backend/dummy dummy.c,1.1,1.2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/taca-cvs/2004-June/index.html" >
+   <LINK REL="made" HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/backend/dummy%20dummy.c%2C1.1%2C1.2&In-Reply-To=%3C200406250020.i5P0KIB22830%40bat.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000064.html">
+   <LINK REL="Next"  HREF="000067.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Taca-cvs] code/backend/dummy dummy.c,1.1,1.2</H1>
+    <B>xscript</B> 
+    <A HREF="mailto:taca-cvs%40lists.berlios.de?Subject=Re%3A%20%5BTaca-cvs%5D%20code/backend/dummy%20dummy.c%2C1.1%2C1.2&In-Reply-To=%3C200406250020.i5P0KIB22830%40bat.berlios.de%3E"
+       TITLE="[Taca-cvs] code/backend/dummy dummy.c,1.1,1.2">nobody at sheep.berlios.de
+       </A><BR>
+    <I>Fri Jun 25 02:20:18 CEST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000064.html">[Taca-cvs] code/common linux_debug.h,1.1,1.2
+</A></li>
+        <LI>Next message: <A HREF="000067.html">[Taca-cvs] doc 05.tex,1.5,1.6
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#66">[ date ]</a>
+              <a href="thread.html#66">[ thread ]</a>
+              <a href="subject.html#66">[ subject ]</a>
+              <a href="author.html#66">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Update of /cvsroot/taca/code/backend/dummy
+In directory sheep:/tmp/cvs-serv29371/backend/dummy
+
+Modified Files:
+	dummy.c 
+Log Message:
+Neteja de cara al frontend
+
+
+Index: dummy.c
+===================================================================
+RCS file: /cvsroot/taca/code/backend/dummy/dummy.c,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -C2 -d -r1.1 -r1.2
+*** dummy.c	15 Jun 2004 17:25:41 -0000	1.1
+--- dummy.c	25 Jun 2004 00:20:15 -0000	1.2
+***************
+*** 1,73 ****
+  
+  #include &quot;backend.h&quot;
+! #include &lt;linux/mm.h&gt;
+  
+  
+! //struct cluster_t clus = {.nom = &quot;123&quot;,
+! //			 .next = NULL};
+! /*
+! struct node_t n3 = {	.nom = &quot;n3&quot;,
+! 			.next = NULL};
+! struct node_t n2 = {	.nom = &quot;n2&quot;,
+! 			.next = &amp;n3 };
+! struct node_t n1 = {	.nom = &quot;n1&quot;,
+! 			.next = &amp;n2};
+  
+! struct proces_t p3 = {	.nom = &quot;proc3&quot;,
+! 			.next = NULL};
+  
+! struct proces_t p2 = {	.nom = &quot;proc2&quot;,
+! 			.next = &amp;p3};
+! struct proces_t p1 = {	.nom = &quot;proc1&quot;,
+! 			.next = &amp;p2};
+  
+! */			
+! int num_clusters() 
+  {
+! 	return 1;
+  }
+  
+! int llistar_clusters (struct cluster_t *llista)
+  {
+! 	//llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t) ,GFP_KERNEL);	
+! 	llista-&gt;nom = &quot;c1&quot; ;
+! 	llista-&gt;next = NULL;
+! 	return 0;
+  }
+  
+  int num_nodes (struct cluster_t *cluster_id)
+  {
+! 	return 3;
+  }
+  
+! int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista)
+  {
+! 	llista[0].nom = &quot;n0&quot;;
+! 	llista[0].next = &amp;llista[1];
+! 	llista[1].nom = &quot;n1&quot;;
+! 	llista[1].next = &amp;llista[2];
+! 	llista[2].nom = &quot;n2&quot;;
+! 	llista[2].next = NULL;
+  
+  	return 0;
+  }
+  
+! int num_procs (struct cluster_t *cluster_id, struct node_t *node_id) 
+  {
+! 	return 3;
+  }
+  
+! int llistar_procs (struct cluster_t *cluster_id, struct node_t *node_id, struct proces_t *llista)
+  {
+! 	llista[0].nom = &quot;p0&quot;;
+! 	llista[0].next = &amp;llista[1];
+! 	llista[1].nom = &quot;p1&quot;;
+  	llista[1].next = &amp;llista[2];
+! 	llista[2].nom = &quot;p2&quot;;
+  	llista[2].next = NULL;
+  
+! 	return 0;
+  }
+  
+  
+  //int migrar (struct proces_t  *proces, struct node_t *node_desti);
+--- 1,152 ----
+  
+  #include &quot;backend.h&quot;
+! #include &lt;linux/slab.h&gt;
+! #include &lt;asm/string.h&gt;
+  
+  
+! int num_clusters() 
+! {
+!     return 1;
+! }
+  
+! int llistar_clusters (struct cluster_t *llista, int maxnum)
+! {
+!     int num = num_clusters();
+  
+!     if (num &gt; maxnum)
+! 	return 0;
+!     strcpy(llista-&gt;nom,&quot;c1&quot;);
+!     llista-&gt;next = NULL;
+  
+!     return num;
+! }
+! 
+! int obtenir_cluster (const char *nom, struct cluster_t *cluster)
+  {
+!     int num = num_clusters();
+!     struct cluster_t *ptr, *llista = kmalloc(sizeof(struct cluster_t)*num, GFP_KERNEL);
+!     llistar_clusters(llista, num);
+!     for (ptr = llista; ptr != NULL; ptr = ptr-&gt;next) {
+! 	if (!strcmp(ptr-&gt;nom, nom)) {
+! 	    strcpy(cluster-&gt;nom, nom);
+! 	    break;
+! 	}
+!     }
+!     kfree(llista);
+!     return ptr != NULL;
+  }
+  
+! int cluster_valid (struct cluster_t *cluster)
+  {
+!     return 1;
+  }
+  
+  int num_nodes (struct cluster_t *cluster_id)
+  {
+!     return 3;
+  }
+  
+! int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista, int maxnum)
+  {
+!     int num = num_nodes(cluster_id);
+  
++     if (num &gt; maxnum)
+  	return 0;
++     strcpy(llista[0].nom, &quot;n0&quot;);
++     llista[0].next = &amp;llista[1];
++     llista[0].parent = cluster_id;
++     strcpy(llista[1].nom, &quot;n1&quot;);
++     llista[1].next = &amp;llista[2];
++     llista[1].parent = cluster_id;
++     strcpy(llista[2].nom, &quot;n2&quot;);
++     llista[2].next = NULL;
++     llista[2].parent = cluster_id;
++ 
++     return num;
+  }
+  
+! int obtenir_node (struct cluster_t *cluster_id, const char *nom, struct node_t *node)
+  {
+!     int num = num_nodes(cluster_id);
+!     struct node_t *ptr, *llista = kmalloc(sizeof(struct node_t)*num, GFP_KERNEL);
+!     llistar_nodes(cluster_id, llista, num);
+!     for (ptr = llista; ptr != NULL; ptr = ptr-&gt;next) {
+! 	if (!strcmp(ptr-&gt;nom, nom)) {
+! 	    strcpy(node-&gt;nom, nom);
+! 	    node-&gt;parent = cluster_id;
+! 	    break;
+! 	}
+!     }
+!     kfree(llista);
+!     return ptr != NULL;
+  }
+  
+! int node_valid (struct node_t *node)
+  {
+!     return 1;
+! }
+! 
+! /* cada quan volem que canvii l'estat dels &quot;p2&quot; (aparicio/desaparicio) */
+! #define MODUL 15
+! static int emulador ()
+! {
+!     struct timeval tv;
+!     do_gettimeofday(&amp;tv);
+!     return tv.tv_sec%MODUL;
+! }
+! 
+! int num_procs (struct node_t *node_id) 
+! {
+!     return 2 + emulador();
+! }
+! 
+! int llistar_procs (struct node_t *node_id, struct proces_t *llista, int maxnum)
+! {
+!     int num = num_procs(node_id);
+! 
+!     if (num &gt; maxnum)
+! 	return 0;
+!     strcpy(llista[0].nom, &quot;p0&quot;);
+!     llista[0].next = &amp;llista[1];
+!     llista[0].parent = node_id;
+!     strcpy(llista[1].nom, &quot;p1&quot;);
+!     llista[1].parent = node_id;
+!     if (emulador()) {
+  	llista[1].next = &amp;llista[2];
+! 	strcpy(llista[2].nom, &quot;p2&quot;);
+  	llista[2].next = NULL;
++ 	llista[2].parent = node_id;
++     }
++     else
++ 	llista[1].next = NULL;
+  
+!     return num;
+  }
+  
++ int obtenir_proc (struct node_t *node_id, const char *nom, struct proces_t *proces)
++ {
++     int num = num_procs(node_id);
++     struct proces_t *ptr, *llista = kmalloc(sizeof(struct proces_t)*num, GFP_KERNEL);
++     llistar_procs(node_id, llista, num);
++     for (ptr = llista; ptr != NULL; ptr = ptr-&gt;next) {
++ 	if (!strcmp(ptr-&gt;nom, nom)) {
++ 	    strcpy(proces-&gt;nom, nom);
++ 	    proces-&gt;parent = node_id;
++ 	    if (!strcmp(nom, &quot;p2&quot;) &amp;&amp; !emulador())
++ 		ptr = NULL;
++ 	    break;
++ 	}
++     }
++     kfree(llista);
++     return ptr != NULL;
++ }
++ 
++ int proc_valid (struct proces_t *proces)
++ {
++     if (!strcmp(proces-&gt;nom, &quot;p2&quot;) &amp;&amp; !emulador())
++ 	return 0;
++     else
++ 	return 1;
++ }
+  
+  //int migrar (struct proces_t  *proces, struct node_t *node_desti);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000064.html">[Taca-cvs] code/common linux_debug.h,1.1,1.2
+</A></li>
+	<LI>Next message: <A HREF="000067.html">[Taca-cvs] doc 05.tex,1.5,1.6
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#66">[ date ]</a>
+              <a href="thread.html#66">[ thread ]</a>
+              <a href="subject.html#66">[ subject ]</a>
+              <a href="author.html#66">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/taca-cvs">More information about the Taca-cvs
+mailing list</a><br>
+</body></html>
